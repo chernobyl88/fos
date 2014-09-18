@@ -5,6 +5,7 @@ import scala.util.parsing.input.Positional
 /** Abstract Syntax Trees for terms. */
 abstract class Term extends Positional
 
+
 /** Expr ::= 'true'
       | 'false'
       | 'if' Expr 'then' Expr 'else' Expr
@@ -15,6 +16,7 @@ abstract class Term extends Positional
    */
 
   //   ... To complete ... 
+
 case class IsZero(t: Term) extends Term
 case class Pred(t: Term) extends Term
 case class Succ(t: Term) extends Term
