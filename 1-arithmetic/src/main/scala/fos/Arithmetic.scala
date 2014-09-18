@@ -22,6 +22,12 @@ object Arithmetic extends StandardTokenParsers {
    */
   def Expr: Parser[Term] = (
   //   ... To complete ... 
+      "true" ~> Expr ^^ { case e1 => True(e1) }
+      | "false" ~> Expr ^^ { case e1 => False(e1) }
+      | "if" ~> Expr ^^ { case e1 => If(e1) }
+      | "0" ~> Expr ^^ { case e1 => Zero(e1) }
+      | "succ" ~> Expr ^^ { case e1 => Succ(e1) }
+      | "pred" ~> Expr ^^ { case e1 => Pred(e1) }
       | "iszero" ~> Expr ^^ { case e1 => IsZero(e1) }
       | failure("illegal start of expression"))
 

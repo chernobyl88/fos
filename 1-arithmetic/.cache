@@ -1,0 +1,203 @@
+format version: 5
+output mode:
+1 items
+0 -> multiple
+output directories:
+2 items
+/Users/vostriak/FoS/1-arithmetic/src/main/scala -> /Users/vostriak/FoS/1-arithmetic/bin
+/Users/vostriak/FoS/1-arithmetic/src/test/scala -> /Users/vostriak/FoS/1-arithmetic/bin
+compile options:
+8 items
+0 -> -javabootclasspath
+1 -> /System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/ui.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jsse.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/jce.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/charsets.jar:/System/Library/Java/Extensions/AppleScriptEngine.jar:/System/Library/Java/Extensions/dns_sd.jar:/System/Library/Java/Extensions/j3daudio.jar:/System/Library/Java/Extensions/j3dcore.jar:/System/Library/Java/Extensions/j3dutils.jar:/System/Library/Java/Extensions/jai_codec.jar:/System/Library/Java/Extensions/jai_core.jar:/System/Library/Java/Extensions/mlibwrapper_jai.jar:/System/Library/Java/Extensions/MRJToolkit.jar:/System/Library/Java/Extensions/QTJava.zip:/System/Library/Java/Extensions/vecmath.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/lib/ext/apple_provider.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/lib/ext/dnsns.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/lib/ext/localedata.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/lib/ext/sunjce_provider.jar:/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Home/lib/ext/sunpkcs11.jar
+2 -> -bootclasspath
+3 -> /Users/vostriak/Downloads/eclipse/configuration/org.eclipse.osgi/bundles/269/1/.cp/lib/scala-library.jar
+4 -> -Xpluginsdir
+5 -> /Users/vostriak/Downloads/eclipse/configuration/org.eclipse.osgi/bundles/268/1/.cp/lib
+6 -> -encoding
+7 -> MacRoman
+javac options:
+0 items
+compiler version:
+1 items
+0 -> 2.10.4
+compile order:
+1 items
+0 -> Mixed
+name hashing:
+1 items
+0 -> false
+products:
+38 items
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$1.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$2.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$3$$anonfun$apply$1.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$3$$anonfun$apply$2.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$3.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$4$$anonfun$apply$3.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$4$$anonfun$apply$4.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$4.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$5$$anonfun$apply$5.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$5$$anonfun$apply$6.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$5.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$6$$anonfun$apply$7.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$6$$anonfun$apply$8.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$6.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$7$$anonfun$apply$10.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$7$$anonfun$apply$9.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$7.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$8$$anonfun$apply$11.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$8$$anonfun$apply$12.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$8.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$9.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/False$.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/False.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/If$.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/If.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/IsZero$.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/IsZero.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Pred$.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Pred.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Succ$.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Succ.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Term.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/True$.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/True.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Zero$.class
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/FoS/1-arithmetic/bin/fos/Zero.class
+binary dependencies:
+4 items
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/Downloads/eclipse/configuration/org.eclipse.osgi/bundles/269/1/.cp/lib/scala-library.jar
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> /Users/vostriak/Downloads/eclipse/configuration/org.eclipse.osgi/bundles/269/1/.cp/lib/scala-library.jar
+direct source dependencies:
+1 items
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> /Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala
+direct external dependencies:
+0 items
+public inherited source dependencies:
+0 items
+public inherited external dependencies:
+0 items
+member reference internal dependencies:
+0 items
+member reference external dependencies:
+0 items
+inheritance internal dependencies:
+0 items
+inheritance external dependencies:
+0 items
+class names:
+38 items
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$1
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$2
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$3
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$3$$anonfun$apply$1
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$3$$anonfun$apply$2
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$4
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$4$$anonfun$apply$3
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$4$$anonfun$apply$4
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$5
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$5$$anonfun$apply$5
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$5$$anonfun$apply$6
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$6
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$6$$anonfun$apply$7
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$6$$anonfun$apply$8
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$7
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$7$$anonfun$apply$10
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$7$$anonfun$apply$9
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$8
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$8$$anonfun$apply$11
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$8$$anonfun$apply$12
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> fos.Arithmetic$$anonfun$Expr$9
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.False
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.False$
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.If
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.If$
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.IsZero
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.IsZero$
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.Pred
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.Pred$
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.Succ
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.Succ$
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.Term
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.True
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.True$
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.Zero
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> fos.Zero$
+used names:
+0 items
+product stamps:
+38 items
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$1.class -> lastModified(1411027051000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$2.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$3$$anonfun$apply$1.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$3$$anonfun$apply$2.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$3.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$4$$anonfun$apply$3.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$4$$anonfun$apply$4.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$4.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$5$$anonfun$apply$5.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$5$$anonfun$apply$6.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$5.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$6$$anonfun$apply$7.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$6$$anonfun$apply$8.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$6.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$7$$anonfun$apply$10.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$7$$anonfun$apply$9.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$7.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$8$$anonfun$apply$11.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$8$$anonfun$apply$12.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$8.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$$anonfun$Expr$9.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic$.class -> lastModified(1411027051000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Arithmetic.class -> lastModified(1411027051000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/False$.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/False.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/If$.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/If.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/IsZero$.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/IsZero.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Pred$.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Pred.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Succ$.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Succ.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Term.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/True$.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/True.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Zero$.class -> lastModified(1411027052000)
+/Users/vostriak/FoS/1-arithmetic/bin/fos/Zero.class -> lastModified(1411027052000)
+source stamps:
+2 items
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> hash(028211dde72b250e0c8eaabf591d6f8d2a2d6db6)
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> hash(50240a06ac878e0e991f6af17c051e2a28e40502)
+binary stamps:
+2 items
+/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar -> lastModified(1381430168000)
+/Users/vostriak/Downloads/eclipse/configuration/org.eclipse.osgi/bundles/269/1/.cp/lib/scala-library.jar -> lastModified(1411023561000)
+class names:
+2 items
+/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Classes/classes.jar -> java.lang.Object
+/Users/vostriak/Downloads/eclipse/configuration/org.eclipse.osgi/bundles/269/1/.cp/lib/scala-library.jar -> scala.Serializable
+internal apis:
+2 items
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlFlpwRASfbtoCAAZJAAdhcGlIYXNoWgAIaGFzTWFjcm9MABhfaW50ZXJuYWxPbmx5X25hbWVIYXNoZXN0ACRMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2hlcztMAANhcGl0ABVMeHNidGkvYXBpL1NvdXJjZUFQSTtMAAtjb21waWxhdGlvbnQAF0x4c2J0aS9hcGkvQ29tcGlsYXRpb247WwAEaGFzaHQAAltCeHBpMeSgAHNyACJ4c2J0aS5hcGkuX2ludGVybmFsT25seV9OYW1lSGFzaGVzVNq+mfrU7EwCAAJbAA9pbXBsaWNpdE1lbWJlcnN0ACNbTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoO1sADnJlZ3VsYXJNZW1iZXJzcQB+AAd4cHVyACNbTHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoO0lagLbdlov0AgAAeHAAAAAAdXEAfgAJAAAAAHNyABN4c2J0aS5hcGkuU291cmNlQVBJuV6n+SkjOKQCAAJbAAtkZWZpbml0aW9uc3QAF1tMeHNidGkvYXBpL0RlZmluaXRpb247WwAIcGFja2FnZXN0ABRbTHhzYnRpL2FwaS9QYWNrYWdlO3hwdXIAF1tMeHNidGkuYXBpLkRlZmluaXRpb247iMlc57TjXg4CAAB4cAAAAAFzcgATeHNidGkuYXBpLkNsYXNzTGlrZYM0HKHfsJdsAgAETAAOZGVmaW5pdGlvblR5cGV0ABpMeHNidGkvYXBpL0RlZmluaXRpb25UeXBlO1sAEHNhdmVkQW5ub3RhdGlvbnN0ABNbTGphdmEvbGFuZy9TdHJpbmc7TAAIc2VsZlR5cGV0ABBMeHNidGkvYXBpL0xhenk7TAAJc3RydWN0dXJlcQB+ABV4cgAheHNidGkuYXBpLlBhcmFtZXRlcml6ZWREZWZpbml0aW9u+RFusdVQPOICAAFbAA50eXBlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1R5cGVQYXJhbWV0ZXI7eHIAFHhzYnRpLmFwaS5EZWZpbml0aW9uhyob6HFC40YCAARMAAZhY2Nlc3N0ABJMeHNidGkvYXBpL0FjY2VzcztbAAthbm5vdGF0aW9uc3QAF1tMeHNidGkvYXBpL0Fubm90YXRpb247TAAJbW9kaWZpZXJzdAAVTHhzYnRpL2FwaS9Nb2RpZmllcnM7TAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwc3IAEHhzYnRpLmFwaS5QdWJsaWO6WD2ubC1gQgIAAHhyABB4c2J0aS5hcGkuQWNjZXNz3WKa+B1jMUgCAAB4cHVyABdbTHhzYnRpLmFwaS5Bbm5vdGF0aW9uO+uX6xkQ9o1IAgAAeHAAAAAAc3IAE3hzYnRpLmFwaS5Nb2RpZmllcnPHERMhaZzcJAIAAUIABWZsYWdzeHAAdAAOZm9zLkFyaXRobWV0aWN1cgAaW0x4c2J0aS5hcGkuVHlwZVBhcmFtZXRlcjvZbSYPKJ3ytgIAAHhwAAAAAH5yABh4c2J0aS5hcGkuRGVmaW5pdGlvblR5cGUAAAAAAAAAABIAAHhyAA5qYXZhLmxhbmcuRW51bQAAAAAAAAAAEgAAeHB0AAZNb2R1bGV1cgATW0xqYXZhLmxhbmcuU3RyaW5nO63SVufpHXtHAgAAeHAAAAACdAAQc2NhbGEuZGVwcmVjYXRlZHQAGnNjYWxhLmFubm90YXRpb24ubWlncmF0aW9uc3IAE3hzYnRpLlNhZmVMYXp5JEltcGxQAi6Tl5dAPwIAA1oACGJpdG1hcCQwTAACX3R0ABJMamF2YS9sYW5nL09iamVjdDtMAARldmFsdAARTHNjYWxhL0Z1bmN0aW9uMDt4cgAWeHNidGkuYXBpLkFic3RyYWN0TGF6edN3tQFfu+egAgAAeHAAcHNyACB4c2J0aS5TYWZlTGF6eSQkYW5vbmZ1biRzdHJpY3QkMQAAAAAAAAAAAgABTAAHdmFsdWUkMXEAfgAxeHBzcgATeHNidGkuYXBpLkVtcHR5VHlwZbz9nkZJO4kkAgAAeHIAFHhzYnRpLmFwaS5TaW1wbGVUeXBlcnhiiCEjv0ACAAB4cgAOeHNidGkuYXBpLlR5cGU/atkhFkmqygIAAHhwc3EAfgAwAHBzcQB+ADVzcgATeHNidGkuYXBpLlN0cnVjdHVyZamq+YCTb9gAAgADTAAIZGVjbGFyZWRxAH4AFUwACWluaGVyaXRlZHEAfgAVTAAHcGFyZW50c3EAfgAVeHEAfgA5c3EAfgAwAHBzcQB+ADV1cQB+ABAAAAABc3IADXhzYnRpLmFwaS5EZWZSvp/ifLQ2aQIAAkwACnJldHVyblR5cGV0ABBMeHNidGkvYXBpL1R5cGU7WwAPdmFsdWVQYXJhbWV0ZXJzdAAaW0x4c2J0aS9hcGkvUGFyYW1ldGVyTGlzdDt4cQB+ABZxAH4AIHVxAH4AIQAAAABzcQB+ACMAdAAEbWFpbnVxAH4AJgAAAABzcgAUeHNidGkuYXBpLlByb2plY3Rpb27z0o1U6UWkLQIAAkwAAmlkcQB+ABxMAAZwcmVmaXh0ABZMeHNidGkvYXBpL1NpbXBsZVR5cGU7eHEAfgA4dAAEVW5pdHNyABN4c2J0aS5hcGkuU2luZ2xldG9u/Kdf+M9W5EYCAAFMAARwYXRodAAQTHhzYnRpL2FwaS9QYXRoO3hxAH4AOHNyAA54c2J0aS5hcGkuUGF0aJs9XAjOpSeEAgABWwAKY29tcG9uZW50c3QAGltMeHNidGkvYXBpL1BhdGhDb21wb25lbnQ7eHB1cgAaW0x4c2J0aS5hcGkuUGF0aENvbXBvbmVudDtD2gl0LWcWdAIAAHhwAAAAAnNyAAx4c2J0aS5hcGkuSWSYMmyLN1PEQAIAAUwAAmlkcQB+ABx4cgAXeHNidGkuYXBpLlBhdGhDb21wb25lbnRfmiJbLoafvAIAAHhwdAAFc2NhbGFzcgAOeHNidGkuYXBpLlRoaXPbCe2mzFpAXAIAAHhxAH4AV3VyABpbTHhzYnRpLmFwaS5QYXJhbWV0ZXJMaXN0O/XTOh3ys3DuAgAAeHAAAAABc3IAF3hzYnRpLmFwaS5QYXJhbWV0ZXJMaXN01sW8HGRJdOMCAAJaAAppc0ltcGxpY2l0WwAKcGFyYW1ldGVyc3QAHFtMeHNidGkvYXBpL01ldGhvZFBhcmFtZXRlcjt4cAB1cgAcW0x4c2J0aS5hcGkuTWV0aG9kUGFyYW1ldGVyO8+4xV2l3bVtAgAAeHAAAAABc3IAGXhzYnRpLmFwaS5NZXRob2RQYXJhbWV0ZXIfRa4X00mw6gIABFoACmhhc0RlZmF1bHRMAAhtb2RpZmllcnQAHUx4c2J0aS9hcGkvUGFyYW1ldGVyTW9kaWZpZXI7TAAEbmFtZXEAfgAcTAADdHBlcQB+AEN4cAB+cgAbeHNidGkuYXBpLlBhcmFtZXRlck1vZGlmaWVyAAAAAAAAAAASAAB4cQB+ACl0AAVQbGFpbnQABGFyZ3NzcgAXeHNidGkuYXBpLlBhcmFtZXRlcml6ZWQWbO5pA8m7fwIAAkwACGJhc2VUeXBlcQB+AEtbAA10eXBlQXJndW1lbnRzdAARW0x4c2J0aS9hcGkvVHlwZTt4cQB+ADhzcQB+AEp0AAVBcnJheXEAfgBQdXIAEVtMeHNidGkuYXBpLlR5cGU7dP+lWnv56UECAAB4cAAAAAFzcQB+AEp0AAZTdHJpbmdzcQB+AE5zcQB+AFF1cQB+AFQAAAADc3EAfgBWdAAEamF2YXNxAH4AVnQABGxhbmdxAH4AW3NxAH4AMABwc3EAfgA1dXEAfgAQAAAAAHNxAH4AMABwc3EAfgA1dXEAfgBvAAAABnNxAH4ASnQAFFN0YW5kYXJkVG9rZW5QYXJzZXJzc3EAfgBOc3EAfgBRdXEAfgBUAAAABnNxAH4AVnEAfgBZc3EAfgBWdAAEdXRpbHNxAH4AVnQAB3BhcnNpbmdzcQB+AFZ0AApjb21iaW5hdG9yc3EAfgBWdAALc3ludGFjdGljYWxxAH4AW3NxAH4ASnQAD1N0ZFRva2VuUGFyc2Vyc3EAfgCCc3EAfgBKdAAMVG9rZW5QYXJzZXJzcQB+AIJzcQB+AEp0AAdQYXJzZXJzc3EAfgBOc3EAfgBRdXEAfgBUAAAABXNxAH4AVnEAfgBZc3EAfgBWdAAEdXRpbHNxAH4AVnQAB3BhcnNpbmdzcQB+AFZ0AApjb21iaW5hdG9ycQB+AFtzcQB+AEp0AAZPYmplY3RxAH4Ac3NxAH4ASnQAA0FueXEAfgBQdXIAFFtMeHNidGkuYXBpLlBhY2thZ2U7WxMZN3CnJ6ECAAB4cAAAAAFzcgAReHNidGkuYXBpLlBhY2thZ2V+WY/2rs45WAIAAUwABG5hbWVxAH4AHHhwdAADZm9zc3IAFXhzYnRpLmFwaS5Db21waWxhdGlvbu364MNq6KBCAgACSgAJc3RhcnRUaW1lWwAHb3V0cHV0c3QAGltMeHNidGkvYXBpL091dHB1dFNldHRpbmc7eHAAAAFIh8QFbnVyABpbTHhzYnRpLmFwaS5PdXRwdXRTZXR0aW5nO39qwvOnh6VCAgAAeHAAAAACc3IAF3hzYnRpLmFwaS5PdXRwdXRTZXR0aW5netmaR3T7HXsCAAJMAA9vdXRwdXREaXJlY3RvcnlxAH4AHEwAD3NvdXJjZURpcmVjdG9yeXEAfgAceHB0ACQvVXNlcnMvdm9zdHJpYWsvRm9TLzEtYXJpdGhtZXRpYy9iaW50AC8vVXNlcnMvdm9zdHJpYWsvRm9TLzEtYXJpdGhtZXRpYy9zcmMvbWFpbi9zY2FsYXNxAH4ArHQAJC9Vc2Vycy92b3N0cmlhay9Gb1MvMS1hcml0aG1ldGljL2JpbnQALy9Vc2Vycy92b3N0cmlhay9Gb1MvMS1hcml0aG1ldGljL3NyYy90ZXN0L3NjYWxhdXIAAltCrPMX+AYIVOACAAB4cAAAABQCghHd5yslDgyOqr9ZHW+NKi1ttg==
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> 
+rO0ABXNyABB4c2J0aS5hcGkuU291cmNlFlpwRASfbtoCAAZJAAdhcGlIYXNoWgAIaGFzTWFjcm9MABhfaW50ZXJuYWxPbmx5X25hbWVIYXNoZXN0ACRMeHNidGkvYXBpL19pbnRlcm5hbE9ubHlfTmFtZUhhc2hlcztMAANhcGl0ABVMeHNidGkvYXBpL1NvdXJjZUFQSTtMAAtjb21waWxhdGlvbnQAF0x4c2J0aS9hcGkvQ29tcGlsYXRpb247WwAEaGFzaHQAAltCeHDFkUCPAHNyACJ4c2J0aS5hcGkuX2ludGVybmFsT25seV9OYW1lSGFzaGVzVNq+mfrU7EwCAAJbAA9pbXBsaWNpdE1lbWJlcnN0ACNbTHhzYnRpL2FwaS9faW50ZXJuYWxPbmx5X05hbWVIYXNoO1sADnJlZ3VsYXJNZW1iZXJzcQB+AAd4cHVyACNbTHhzYnRpLmFwaS5faW50ZXJuYWxPbmx5X05hbWVIYXNoO0lagLbdlov0AgAAeHAAAAAAdXEAfgAJAAAAAHNyABN4c2J0aS5hcGkuU291cmNlQVBJuV6n+SkjOKQCAAJbAAtkZWZpbml0aW9uc3QAF1tMeHNidGkvYXBpL0RlZmluaXRpb247WwAIcGFja2FnZXN0ABRbTHhzYnRpL2FwaS9QYWNrYWdlO3hwdXIAF1tMeHNidGkuYXBpLkRlZmluaXRpb247iMlc57TjXg4CAAB4cAAAAAhzcgATeHNidGkuYXBpLkNsYXNzTGlrZYM0HKHfsJdsAgAETAAOZGVmaW5pdGlvblR5cGV0ABpMeHNidGkvYXBpL0RlZmluaXRpb25UeXBlO1sAEHNhdmVkQW5ub3RhdGlvbnN0ABNbTGphdmEvbGFuZy9TdHJpbmc7TAAIc2VsZlR5cGV0ABBMeHNidGkvYXBpL0xhenk7TAAJc3RydWN0dXJlcQB+ABV4cgAheHNidGkuYXBpLlBhcmFtZXRlcml6ZWREZWZpbml0aW9u+RFusdVQPOICAAFbAA50eXBlUGFyYW1ldGVyc3QAGltMeHNidGkvYXBpL1R5cGVQYXJhbWV0ZXI7eHIAFHhzYnRpLmFwaS5EZWZpbml0aW9uhyob6HFC40YCAARMAAZhY2Nlc3N0ABJMeHNidGkvYXBpL0FjY2VzcztbAAthbm5vdGF0aW9uc3QAF1tMeHNidGkvYXBpL0Fubm90YXRpb247TAAJbW9kaWZpZXJzdAAVTHhzYnRpL2FwaS9Nb2RpZmllcnM7TAAEbmFtZXQAEkxqYXZhL2xhbmcvU3RyaW5nO3hwc3IAEHhzYnRpLmFwaS5QdWJsaWO6WD2ubC1gQgIAAHhyABB4c2J0aS5hcGkuQWNjZXNz3WKa+B1jMUgCAAB4cHVyABdbTHhzYnRpLmFwaS5Bbm5vdGF0aW9uO+uX6xkQ9o1IAgAAeHAAAAAAc3IAE3hzYnRpLmFwaS5Nb2RpZmllcnPHERMhaZzcJAIAAUIABWZsYWdzeHABdAAIZm9zLlRlcm11cgAaW0x4c2J0aS5hcGkuVHlwZVBhcmFtZXRlcjvZbSYPKJ3ytgIAAHhwAAAAAH5yABh4c2J0aS5hcGkuRGVmaW5pdGlvblR5cGUAAAAAAAAAABIAAHhyAA5qYXZhLmxhbmcuRW51bQAAAAAAAAAAEgAAeHB0AAhDbGFzc0RlZnVyABNbTGphdmEubGFuZy5TdHJpbmc7rdJW5+kde0cCAAB4cAAAAABzcgATeHNidGkuU2FmZUxhenkkSW1wbFACLpOXl0A/AgADWgAIYml0bWFwJDBMAAJfdHQAEkxqYXZhL2xhbmcvT2JqZWN0O0wABGV2YWx0ABFMc2NhbGEvRnVuY3Rpb24wO3hyABZ4c2J0aS5hcGkuQWJzdHJhY3RMYXp503e1AV+756ACAAB4cABwc3IAIHhzYnRpLlNhZmVMYXp5JCRhbm9uZnVuJHN0cmljdCQxAAAAAAAAAAACAAFMAAd2YWx1ZSQxcQB+AC94cHNyABN4c2J0aS5hcGkuRW1wdHlUeXBlvP2eRkk7iSQCAAB4cgAUeHNidGkuYXBpLlNpbXBsZVR5cGVyeGKIISO/QAIAAHhyAA54c2J0aS5hcGkuVHlwZT9q2SEWSarKAgAAeHBzcQB+AC4AcHNxAH4AM3NyABN4c2J0aS5hcGkuU3RydWN0dXJlqar5gJNv2AACAANMAAhkZWNsYXJlZHEAfgAVTAAJaW5oZXJpdGVkcQB+ABVMAAdwYXJlbnRzcQB+ABV4cQB+ADdzcQB+AC4AcHNxAH4AM3VxAH4AEAAAAABzcQB+AC4AcHNxAH4AM3VxAH4AEAAAAABzcQB+AC4AcHNxAH4AM3VyABFbTHh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waS5QYWNrYWdlflmP9q7OOVgCAAFMAARuYW1lcQB+ABx4cHQAA2Zvc3NyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABSIfEBW51cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAnNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5cQB+ABxMAA9zb3VyY2VEaXJlY3RvcnlxAH4AHHhwdAAkL1VzZXJzL3Zvc3RyaWFrL0ZvUy8xLWFyaXRobWV0aWMvYmludAAvL1VzZXJzL3Zvc3RyaWFrL0ZvUy8xLWFyaXRobWV0aWMvc3JjL21haW4vc2NhbGFzcQB+AiV0ACQvVXNlcnMvdm9zdHJpYWsvRm9TLzEtYXJpdGhtZXRpYy9iaW50AC8vVXNlcnMvdm9zdHJpYWsvRm9TLzEtYXJpdGhtZXRpYy9zcmMvdGVzdC9zY2FsYXVyAAJbQqzzF/gGCFTgAgAAeHAAAAAUUCQKBqyHjg6ZH2rxfAUeKijkBQI=
+external apis:
+0 items
+source infos:
+2 items
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Arithmetic.scala -> 
+AAAAAAAAAAA=
+/Users/vostriak/FoS/1-arithmetic/src/main/scala/fos/Terms.scala -> 
+AAAAAAAAAAA=
+compilations:
+1 items
+0 -> rO0ABXNyABV4c2J0aS5hcGkuQ29tcGlsYXRpb27t+uDDauigQgIAAkoACXN0YXJ0VGltZVsAB291dHB1dHN0ABpbTHhzYnRpL2FwaS9PdXRwdXRTZXR0aW5nO3hwAAABSIfEBW51cgAaW0x4c2J0aS5hcGkuT3V0cHV0U2V0dGluZzt/asLzp4elQgIAAHhwAAAAAnNyABd4c2J0aS5hcGkuT3V0cHV0U2V0dGluZ3rZmkd0+x17AgACTAAPb3V0cHV0RGlyZWN0b3J5dAASTGphdmEvbGFuZy9TdHJpbmc7TAAPc291cmNlRGlyZWN0b3J5cQB+AAZ4cHQAJC9Vc2Vycy92b3N0cmlhay9Gb1MvMS1hcml0aG1ldGljL2JpbnQALy9Vc2Vycy92b3N0cmlhay9Gb1MvMS1hcml0aG1ldGljL3NyYy9tYWluL3NjYWxhc3EAfgAFdAAkL1VzZXJzL3Zvc3RyaWFrL0ZvUy8xLWFyaXRobWV0aWMvYmludAAvL1VzZXJzL3Zvc3RyaWFrL0ZvUy8xLWFyaXRobWV0aWMvc3JjL3Rlc3Qvc2NhbGE=
