@@ -23,7 +23,8 @@ object Arithmetic extends StandardTokenParsers {
   def Expr: Parser[Term] = (
       "true" ~> Expr ^^ { case e1 => True() }
       | "false" ~> Expr ^^ { case e1 => False() }
-      | "if" ~> Expr ~ "then" ~> Expr ~ "else" ~> Expr
+      | "if" ~> Expr ~ ("then" ~> Expr) ~ ("else" ~> Expr) ~> Expr
+      | numericLit ~> Expr ^^ { case e1 => NumVal(e1) }
       | "0" ~> Expr ^^ { case e1 => Zero() }
       | "succ" ~> Expr ^^ { case e1 => Succ(e1)}
       | "pred" ~> Expr ^^ { case e1 => Pred(e1) }
@@ -31,7 +32,32 @@ object Arithmetic extends StandardTokenParsers {
       | failure("illegal start of expression"))
 
 
-  //   ... To complete ... 
+  def showData(t: Term): Any = t match {
+      case Succ(e1) => e1 match {
+         	case Pred(e1) => showData(e1)
+          	case e1 => "Stuck term: Succ(" + showData(e1) + ")"
+      }
+      case NumVal(e1) => e1 match {
+        	case  e1
+      }
+      case Pred(e1) => e1 match {
+        	case Succ(e1) => showData(e1)
+        	case Zero() => 0
+        	case e1 => "Stuck term: Succ(" + showData(e1) + ")"
+      }
+      case IsZero(e1) => e1 match {
+        	case Zero() => true
+        	case Succ(e1) => showData(e1) match {
+        	  case 0 => true
+        	  case Succ(Zero()) => false
+        	  case e1 => 
+        	}
+        	case e1 => "Stuck term: Succ(" + showData(e1) + ")"
+      }
+      case True() => true
+      case False() => false
+      case Zero() => 0
+  }
    
   def main(args: Array[String]): Unit = {
     val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
@@ -49,10 +75,12 @@ object Arithmetic extends StandardTokenParsers {
       	  }
       	  case IsZero(e1) => e1 match {
       	    	case Zero() => println("true")
-      	    	case e1 => println("false")
+      	    	case Succ(e1) => println("false")
+      	    	case e1 => println("Stuck term: Succ(" + e1 + ")")
       	  }
       	  case True() => println("true")
       	  case False() => println("false")
+      	  case Zero() => println("0")
       	}
       case e =>
         println(e)
