@@ -16,11 +16,10 @@ abstract class Term extends Positional
    */
 
   //   ... To complete ... 
-
 case class IsZero(t: Term) extends Term
 case class Pred(t: Term) extends Term
 case class Succ(t: Term) extends Term
-case class If(t: Term) extends Term
-case class True(t: Term) extends Term
-case class False(t: Term) extends Term
-case class Zero(t: Term) extends Term
+//case class If(t: Term) extends Term
+case class True() extends Term
+case class False() extends Term
+case class Zero() extends Term
