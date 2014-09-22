@@ -37,6 +37,11 @@ object Arithmetic extends StandardTokenParsers {
          	case Pred(e1) => showData(e1)
           	case e1 => "Stuck term: Succ(" + showData(e1) + ")"
       }
+      case If(e1,e2,e3) => showData(e1) match{
+        	case True() => showData(e2)
+        	case False() => showData(e3)
+        	case e1 => "Stuck term: If(" + e1 + ")"
+      }
       case NumVal(e1) => e1 match {
         	case  e1 => e1
       }
