@@ -48,7 +48,7 @@ object Arithmetic extends StandardTokenParsers {
       case Pred(e1) => e1 match {
         	case Succ(e1) => showData(e1)
         	case Zero() => 0
-        	case e1 => "Stuck term: Succ(" + showData(e1) + ")"
+        	case e1 => "Stuck term: Pred(" + showData(e1) + ")"
       }
       case IsZero(e1) => e1 match {
         	case Zero() => true
@@ -57,7 +57,7 @@ object Arithmetic extends StandardTokenParsers {
         	  case Succ(Zero()) => false
         	  case e1 => 
         	}
-        	case e1 => "Stuck term: Succ(" + showData(e1) + ")"
+        	case e1 => "Stuck term: IsZero(" + showData(e1) + ")"
       }
       case True() => true
       case False() => false
@@ -76,12 +76,12 @@ object Arithmetic extends StandardTokenParsers {
       	  case Pred(e1) => e1 match {
       	    	case Succ(e1) => println(e1)
       	    	case Zero() => println("0")
-      	    	case e1 => println("Stuck term: Succ(" + e1 + ")")
+      	    	case e1 => println("Stuck term: Pred(" + e1 + ")")
       	  }
       	  case IsZero(e1) => e1 match {
       	    	case Zero() => println("true")
       	    	case Succ(e1) => println("false")
-      	    	case e1 => println("Stuck term: Succ(" + e1 + ")")
+      	    	case e1 => println("Stuck term: IsZero(" + e1 + ")")
       	  }
       	  case True() => println("true")
       	  case False() => println("false")
