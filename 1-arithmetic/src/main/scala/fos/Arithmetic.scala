@@ -21,54 +21,120 @@ object Arithmetic extends StandardTokenParsers {
       | 'iszero' Expr
   */
   def Expr: Parser[Term] = (
-      "true" ~> Expr ^^ { case e1 => True() }
-      | "false" ~> Expr ^^ { case e1 => False() }
-      | "if" ~ Expr ~ "then" ~ Expr ~ "else" ~ Expr ^^ {case "if" ~ e1 ~ "then" ~ e2 ~ "else" ~ e3 => If(e1, e2, e3)}
-      | "0" ~> Expr ^^ { case e1 => Zero() }
-      | "succ" ~> Expr ^^ { case e1 => Succ(e1)}
-      | "pred" ~> Expr ^^ { case e1 => Pred(e1) }
-      | "iszero" ~> Expr ^^ { case e1 => IsZero(e1) }
+      "true" ^^ { case e1 => {
+	        println("True")
+	        True()
+	      }
+      }
+      | "false" ^^ { case e1 => {
+    	  println("False")
+    	  False()
+      	} 
+      }
+      | "if" ~ Expr ~ "then" ~ Expr ~ "else" ~ Expr ^^ {case "if" ~ e1 ~ "then" ~ e2 ~ "else" ~ e3 => {
+    	  println("If");
+    	  If(e1, e2, e3)
+      	}
+      }
+      | "0" ^^ { case e1 => {
+    	  println("Zero");
+    	  Zero()
+      	} 
+      }
+      | "succ" ~> Expr ^^ { case e1 => {
+    	  println("Succ");
+    	  Succ(e1)
+      	}
+      }
+      | "pred" ~> Expr ^^ { case e1 => {
+    	  println("Pred");
+    	  Pred(e1)
+      	}
+      }
+      | "iszero" ~> Expr ^^ { case e1 => {
+    	  println("Is zero")
+    	  IsZero(e1)
+      	}
+      }
+      | numericLit ^^ {case num => {
+    	  println("NumericLit");
+    	  decomposeNum(num.toInt)
+      	}
+      }
       | failure("illegal start of expression"))
 
 
-  def showData(t: Term): Any = t match {
-      case Succ(e1) => e1 match {
-         	case Pred(e1) => showData(e1)
-          	case e1 => "Stuck term: Succ(" + showData(e1) + ")"
-      }
-      case If(e1,e2,e3) => showData(e1) match{
-        	case True() => showData(e2)
-        	case False() => showData(e3)
-        	case e1 => "Stuck term: If(" + e1 + ")"
-      }
-      case Pred(e1) => e1 match {
-        	case Succ(e1) => showData(e1)
-        	case Zero() => 0
-        	case e1 => "Stuck term: Pred(" + showData(e1) + ")"
-      }
-      case IsZero(e1) => e1 match {
-        	case Zero() => true
-        	case Succ(e1) => showData(e1) match {
-        	  case 0 => true
-        	  case Succ(Zero()) => false
-        	  case e1 => 
-        	}
-        	case e1 => "Stuck term: IsZero(" + showData(e1) + ")"
-      }
-      case True() => true
-      case False() => false
-      case Zero() => 0
+  def decomposeNum(num: Int) : Term = {
+    if (num <= 0) {
+      println("Done")
+      Zero()
+    } else {
+      println("In instance")
+      Succ(decomposeNum(num - 1))
+    }
+  }
+  
+  def eval(t: Term):Term = {
+    println(t);
+    t match {
+	    case If(e1, e2, e3) => {
+	    		eval(e1) match {
+	    		  case True() => eval(e2)
+	    		  case False() => eval(e3)
+	    		  case StuckTerm(err) => StuckTerm(err)
+	    		  case err => StuckTerm(err)
+	    		}
+	    	}
+	    case IsZero(e1) => {
+	      eval(e1) match {
+	        case Zero() => True()
+	        case Succ(_) => False()
+	        case StuckTerm(err) => StuckTerm(err)
+	    	case err => StuckTerm(err)
+	        }
+	      }
+	    case Pred(e1) => {
+	      eval(e1) match {
+	        case Zero() => Zero()
+	        case Pred(e1) => Pred(Pred(e1))
+	        case Succ(e2) => e2
+	        case StuckTerm(err) => StuckTerm(err)
+	    	case err => StuckTerm(err)
+	      }
+	    }
+	    case Succ(e1) => {
+	      eval(e1) match {
+	        case Zero() => Succ(Zero())
+	        case Succ(e1) => Succ(Succ(e1))
+	        case Pred(e2) => e2
+	        case StuckTerm(err) => StuckTerm(err)
+	    	case err => StuckTerm(err)
+	      }
+	    }
+	    case True() => True()
+	    case False() => False()
+	    case Zero() => Zero()
+	    case err => err
+	  }
   }
    
   def main(args: Array[String]): Unit = {
-    val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+    println("Get system")
+    var sys = System.in
+    println("Get Input")
+    var input = new java.io.InputStreamReader(sys)
+    println("Get Token")
+    
+    var myData = "if true then true else false";
+    val tokens = new lexical.Scanner(myData)
+    //val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+    println("Parse")
     phrase(Expr)(tokens) match {
       case Success(trees, _) => 
-      	try {
-      	  
-      	} catch {
-      	  case error:Throwable => println(error.toString())
-      	}
+        println(trees);
+        println("begin");
+      	eval(trees)
+        println("end");
       case e =>
         println(e)
     }

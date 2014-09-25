@@ -38,3 +38,6 @@ case class False() extends Term {
 case class Zero() extends Term {
   override def toString() = "Zero"
 }
+case class StuckTerm(t: Term) extends Term {
+  override def toString() = "Stuck term: " + t
+}
