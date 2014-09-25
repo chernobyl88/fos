@@ -23,8 +23,7 @@ object Arithmetic extends StandardTokenParsers {
   def Expr: Parser[Term] = (
       "true" ~> Expr ^^ { case e1 => True() }
       | "false" ~> Expr ^^ { case e1 => False() }
-      | "if" ~> Expr ~ ("then" ~> Expr) ~ ("else" ~> Expr) ~> Expr
-      | numericLit ~> Expr ^^ { case e1 => NumVal(e1) }
+      | "if" ~ Expr ~ "then" ~ Expr ~ "else" ~ Expr ^^ {case "if" ~ e1 ~ "then" ~ e2 ~ "else" ~ e3 => If(e1, e2, e3)}
       | "0" ~> Expr ^^ { case e1 => Zero() }
       | "succ" ~> Expr ^^ { case e1 => Succ(e1)}
       | "pred" ~> Expr ^^ { case e1 => Pred(e1) }
@@ -41,10 +40,6 @@ object Arithmetic extends StandardTokenParsers {
         	case True() => showData(e2)
         	case False() => showData(e3)
         	case e1 => "Stuck term: If(" + e1 + ")"
-      }
-      case NumVal(e1) => e1 match {
-        	case  e1:Zero => ???
-        	case e1 => ???
       }
       case Pred(e1) => e1 match {
         	case Succ(e1) => showData(e1)
@@ -69,24 +64,10 @@ object Arithmetic extends StandardTokenParsers {
     val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Expr)(tokens) match {
       case Success(trees, _) => 
-      	trees match {
-      	  case Succ(e1) => e1 match {
-      	    	case Pred(e1) => println(e1)
-      	    	case e1 => println("Stuck term: Succ(" + e1 + ")")
-      	  }
-      	  case Pred(e1) => e1 match {
-      	    	case Succ(e1) => println(e1)
-      	    	case Zero() => println("0")
-      	    	case e1 => println("Stuck term: Pred(" + e1 + ")")
-      	  }
-      	  case IsZero(e1) => e1 match {
-      	    	case Zero() => println("true")
-      	    	case Succ(e1) => println("false")
-      	    	case e1 => println("Stuck term: IsZero(" + e1 + ")")
-      	  }
-      	  case True() => println("true")
-      	  case False() => println("false")
-      	  case Zero() => println("0")
+      	try {
+      	  
+      	} catch {
+      	  case error:Throwable => println(error.toString())
       	}
       case e =>
         println(e)

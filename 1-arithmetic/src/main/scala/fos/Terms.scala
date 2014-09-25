@@ -16,11 +16,25 @@ abstract class Term extends Positional
    */
 
   //   ... To complete ... 
-case class IsZero(t: Term) extends Term
-case class Pred(t: Term) extends Term
-case class Succ(t: Term) extends Term
-case class NumVal(t: Term) extends Term
-case class If(t1: Term, t2: Term, t3: Term) extends Term
-case class True() extends Term
-case class False() extends Term
-case class Zero() extends Term
+case class IsZero(t: Term) extends Term {
+  override def toString() = "IsZero ( " + t + " )"
+}
+
+case class Pred(t: Term) extends Term {
+  override def toString() = "Pred ( " + t + " )"
+}
+case class Succ(t: Term) extends Term {
+  override def toString() = "Succ ( " + t + " )"
+}
+case class If(t1: Term, t2: Term, t3: Term) extends Term {
+  override def toString() = "If ( " + t1 + " ) then { " + t2 + " } else { " + t3 + " }" 
+}
+case class True() extends Term {
+  override def toString() = "True"
+}
+case class False() extends Term {
+  override def toString() = "False"
+}
+case class Zero() extends Term {
+  override def toString() = "Zero"
+}
