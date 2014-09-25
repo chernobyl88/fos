@@ -16,7 +16,7 @@
 [0m[[0minfo[0m] [0mCompiling 1 Scala source to C:\Users\Chernobyl\epfl\master\semestre_1\foundation_software\projet\fos\1-arithmetic\target\scala-2.10\classes...[0m
 [0m[[0mdebug[0m] [0mGetting compiler-interface from component compiler for Scala 2.10.4[0m
 [0m[[0mdebug[0m] [0mGetting compiler-interface from component compiler for Scala 2.10.4[0m
-[0m[[0mdebug[0m] [0mRunning cached compiler 7fe51146, interfacing (CompilerInterface) with Scala compiler version 2.10.4[0m
+[0m[[0mdebug[0m] [0mRunning cached compiler 4add1af4, interfacing (CompilerInterface) with Scala compiler version 2.10.4[0m
 [0m[[0mdebug[0m] [0mCalling Scala compiler with arguments  (CompilerInterface):[0m
 [0m[[0mdebug[0m] [0m	-unchecked[0m
 [0m[[0mdebug[0m] [0m	-deprecation[0m
@@ -24,7 +24,7 @@
 [0m[[0mdebug[0m] [0m	C:\Program Files\Java\jre1.8.0_20\lib\resources.jar;C:\Program Files\Java\jre1.8.0_20\lib\rt.jar;C:\Program Files\Java\jre1.8.0_20\lib\sunrsasign.jar;C:\Program Files\Java\jre1.8.0_20\lib\jsse.jar;C:\Program Files\Java\jre1.8.0_20\lib\jce.jar;C:\Program Files\Java\jre1.8.0_20\lib\charsets.jar;C:\Program Files\Java\jre1.8.0_20\lib\jfr.jar;C:\Program Files\Java\jre1.8.0_20\classes;C:\Users\Chernobyl\.ivy2\cache\org.scala-lang\scala-library\jars\scala-library-2.10.4.jar[0m
 [0m[[0mdebug[0m] [0m	-classpath[0m
 [0m[[0mdebug[0m] [0m	C:\Users\Chernobyl\epfl\master\semestre_1\foundation_software\projet\fos\1-arithmetic\target\scala-2.10\classes[0m
-[0m[[0mdebug[0m] [0mScala compilation took 2.534660618 s[0m
+[0m[[0mdebug[0m] [0mScala compilation took 2.218801628 s[0m
 [0m[[0mdebug[0m] [0mInvalidated by transitive public inheritance: Set()[0m
 [0m[[0mdebug[0m] [0mInvalidated by direct dependency: Set()[0m
 [0m[[0mdebug[0m] [0mNew invalidations:[0m

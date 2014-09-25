@@ -22,42 +22,34 @@ object Arithmetic extends StandardTokenParsers {
   */
   def Expr: Parser[Term] = (
       "true" ^^ { case e1 => {
-	        println("True")
 	        True()
 	      }
       }
       | "false" ^^ { case e1 => {
-    	  println("False")
     	  False()
       	} 
       }
       | "if" ~ Expr ~ "then" ~ Expr ~ "else" ~ Expr ^^ {case "if" ~ e1 ~ "then" ~ e2 ~ "else" ~ e3 => {
-    	  println("If");
     	  If(e1, e2, e3)
       	}
       }
       | "0" ^^ { case e1 => {
-    	  println("Zero");
     	  Zero()
       	} 
       }
       | "succ" ~> Expr ^^ { case e1 => {
-    	  println("Succ");
     	  Succ(e1)
       	}
       }
       | "pred" ~> Expr ^^ { case e1 => {
-    	  println("Pred");
     	  Pred(e1)
       	}
       }
       | "iszero" ~> Expr ^^ { case e1 => {
-    	  println("Is zero")
     	  IsZero(e1)
       	}
       }
       | numericLit ^^ {case num => {
-    	  println("NumericLit");
     	  decomposeNum(num.toInt)
       	}
       }
@@ -66,10 +58,8 @@ object Arithmetic extends StandardTokenParsers {
 
   def decomposeNum(num: Int) : Term = {
     if (num <= 0) {
-      println("Done")
       Zero()
     } else {
-      println("In instance")
       Succ(decomposeNum(num - 1))
     }
   }
@@ -125,16 +115,19 @@ object Arithmetic extends StandardTokenParsers {
     var input = new java.io.InputStreamReader(sys)
     println("Get Token")
     
-    var myData = "if true then true else false";
+    var myData = "if iszero pred pred pred pred pred 5 then if iszero succ pred succ pred succ pred succ 0 then true else false else false";
     val tokens = new lexical.Scanner(myData)
-    //val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+   // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     println("Parse")
     phrase(Expr)(tokens) match {
-      case Success(trees, _) => 
-        println(trees);
+      case Success(trees, _) =>
         println("begin");
-      	eval(trees)
+      	var myVal = eval(trees)
         println("end");
+      	myVal match {
+      	  case e:StuckTerm => println(e)
+      	  case e => println("Final: " + e)
+      	}
       case e =>
         println(e)
     }
