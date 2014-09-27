@@ -29,7 +29,9 @@ case class Pred(t: Term) extends Term {
 case class Succ(t: Term) extends Term {
   override def toString() = "Succ (" + t + ")"
 }
-case class NumericSucc(t: Term) extends Term with Numeric with Value;
+case class NumericSucc(t: Term) extends Term with Numeric with Value {
+  override def toString() = "Succ (" + t + ")"
+}
 
 case class If(t1: Term, t2: Term, t3: Term) extends Term {
   override def toString() = "If (" + t1 + ") then {" + t2 + "} else {" + t3 + "}" 

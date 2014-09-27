@@ -147,7 +147,7 @@ object Arithmetic extends StandardTokenParsers {
   def main(args: Array[String]): Unit = {
     
     var myData = "if 1 then true else false";
-    myData = "pred succ succ succ false"
+   // myData = "pred succ succ succ false"
     val tokens = new lexical.Scanner(myData)
    // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Expr)(tokens) match {
@@ -155,6 +155,7 @@ object Arithmetic extends StandardTokenParsers {
         
         var currTerm = trees
         var finished = false
+        
         while (!finished) {
           currTerm match {
             case term:Value => {
