@@ -60,18 +60,17 @@ object Arithmetic extends StandardTokenParsers {
     if (num <= 0) {
       Zero()
     } else {
-      Succ(decomposeNum(num - 1))
+      NumericSucc(decomposeNum(num - 1))
     }
   }
   
   def eval(t: Term):Term = {
-    println(t);
     t match {
 	    case If(e1, e2, e3) => {
 	    		eval(e1) match {
 	    		  case True() => eval(e2)
 	    		  case False() => eval(e3)
-	    		  case StuckTerm(err) => StuckTerm(err)
+	    		  case StuckTerm(err) => e1
 	    		  case err => StuckTerm(t)
 	    		}
 	    	}
@@ -107,26 +106,75 @@ object Arithmetic extends StandardTokenParsers {
 	    case err => err
 	  }
   }
+  
+  def reduction(t: Term): Term = {
+    t match {
+      case If (e1, e2, e3) => {
+        e1 match {
+          case True() => e2
+          case False() => e3
+          case term:Value => StuckTerm(t)
+          case _ => If(reduction(e1), e2, e3)
+        }
+      }
+      case IsZero(e1) => {
+        e1 match {
+          case Zero() => True()
+          case Succ(num:Numeric) => False()
+          case term:Value => StuckTerm(t)
+          case _ => IsZero(reduction(e1))
+        }
+      }
+      case Pred(e1) => {
+        e1 match {
+	        case Zero() => Zero()
+	        case Succ(num:Numeric) => num
+	        case term:Value => StuckTerm(t)
+	        case _ => Pred(reduction(e1))
+        }
+      }
+      case Succ(e1) => {
+        e1 match {
+          case num:Numeric => NumericSucc(num)
+          case term:Value => StuckTerm(t)
+          case _ => Succ(reduction(e1))
+        }
+      }
+      case _ => t
+    }
+  }
    
   def main(args: Array[String]): Unit = {
-    println("Get system")
-    var sys = System.in
-    println("Get Input")
-    var input = new java.io.InputStreamReader(sys)
-    println("Get Token")
     
     var myData = "if 1 then true else false";
+    myData = "pred succ succ succ false"
     val tokens = new lexical.Scanner(myData)
    // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
-    println("Parse")
     phrase(Expr)(tokens) match {
       case Success(trees, _) =>
-        println("begin");
-      	var myVal = eval(trees)
-        println("end");
-      	myVal match {
-      	  case e:StuckTerm => println(e)
-      	  case e => println("Final: " + e)
+        
+        var currTerm = trees
+        var finished = false
+        while (!finished) {
+          currTerm match {
+            case term:Value => {
+              currTerm match {
+                case StuckTerm(t) => println("Stuck term: " + term)
+                case term => println(term)
+              }
+              finished = true
+            }
+            case term => {
+          println(currTerm)
+              currTerm = reduction(term)
+            }
+          }
+        }
+        
+        print("Big Step: ");
+      	eval(trees) match {
+      	  case StuckTerm(e) => println("Stuck term: " + e)
+      	  case term => println(term)
       	}
       case e =>
         println(e)
