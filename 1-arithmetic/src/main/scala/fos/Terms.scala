@@ -20,21 +20,21 @@ abstract class Term extends Positional
 
   //   ... To complete ... 
 case class IsZero(t: Term) extends Term {
-  override def toString() = "IsZero (" + t + ")"
+  override def toString() = "IsZero(" + t + ")"
 }
 
 case class Pred(t: Term) extends Term {
-  override def toString() = "Pred (" + t + ")"
+  override def toString() = "Pred(" + t + ")"
 }
 case class Succ(t: Term) extends Term {
-  override def toString() = "Succ (" + t + ")"
+  override def toString() = "Succ(" + t + ")"
 }
 case class NumericSucc(t: Term) extends Term with Numeric with Value {
-  override def toString() = "Succ (" + t + ")"
+  override def toString() = "Succ(" + t + ")"
 }
 
 case class If(t1: Term, t2: Term, t3: Term) extends Term {
-  override def toString() = "If (" + t1 + ") then {" + t2 + "} else {" + t3 + "}" 
+  override def toString() = "If(" + t1 + "," + t2 + "," + t3 + ")" 
 }
 case class True() extends Term with Value {
   override def toString() = "True"
