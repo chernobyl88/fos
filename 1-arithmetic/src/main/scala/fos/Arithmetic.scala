@@ -114,7 +114,13 @@ object Arithmetic extends StandardTokenParsers {
           case True() => e2
           case False() => e3
           case term:Value => StuckTerm(t)
-          case _ => If(reduction(e1), e2, e3)
+          case _ => {
+            reduction(e1) match {
+              case StuckTerm(_) => StuckTerm(t)
+              case t => If(t, e2, e3)
+            }
+            
+          }
         }
       }
       case IsZero(e1) => {
@@ -122,22 +128,38 @@ object Arithmetic extends StandardTokenParsers {
           case Zero() => True()
           case Succ(num:Numeric) => False()
           case term:Value => StuckTerm(t)
-          case _ => IsZero(reduction(e1))
+          case _ => {
+            reduction(e1) match {
+              case StuckTerm(_) => StuckTerm(t)
+              case t => IsZero(t)
+            }
+          }
         }
       }
       case Pred(e1) => {
         e1 match {
 	        case Zero() => Zero()
 	        case Succ(num:Numeric) => num
+	        case NumericSucc(num:Numeric) => num
 	        case term:Value => StuckTerm(t)
-	        case _ => Pred(reduction(e1))
+	        case _ => {
+	          reduction(e1) match {
+	            case StuckTerm(_) => StuckTerm(t)
+	            case t => Pred(t)
+	          }
+	        }
         }
       }
       case Succ(e1) => {
         e1 match {
           case num:Numeric => NumericSucc(num)
           case term:Value => StuckTerm(t)
-          case _ => Succ(reduction(e1))
+          case _ => {
+	          reduction(e1) match {
+	            case StuckTerm(_) => StuckTerm(t)
+	            case t => Succ(t)
+	          }
+	        }
         }
       }
       case _ => t
@@ -147,7 +169,7 @@ object Arithmetic extends StandardTokenParsers {
   def main(args: Array[String]): Unit = {
     
     var myData = "if 1 then true else false";
-   // myData = "pred succ succ succ false"
+    myData = "pred succ succ succ false"
     val tokens = new lexical.Scanner(myData)
    // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Expr)(tokens) match {
