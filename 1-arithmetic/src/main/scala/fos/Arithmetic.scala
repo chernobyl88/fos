@@ -77,6 +77,7 @@ object Arithmetic extends StandardTokenParsers {
 	    case IsZero(e1) => {
 	      eval(e1) match {
 	        case Zero() => True()
+	        case NumericSucc(_) => False()
 	        case Succ(_) => False()
 	        case StuckTerm(err) => StuckTerm(err)
 	    	case err => StuckTerm(t)
@@ -85,8 +86,9 @@ object Arithmetic extends StandardTokenParsers {
 	    case Pred(e1) => {
 	      eval(e1) match {
 	        case Zero() => Zero()
-	        case Pred(e1) => Pred(Pred(e1))
+	        case Pred(e2) => Pred(Pred(e2))
 	        case Succ(e2) => e2
+	        case NumericSucc(e2) => e2
 	        case StuckTerm(err) => StuckTerm(err)
 	    	case err => StuckTerm(t)
 	      }
@@ -95,6 +97,7 @@ object Arithmetic extends StandardTokenParsers {
 	      eval(e1) match {
 	        case Zero() => Succ(Zero())
 	        case Succ(e1) => Succ(Succ(e1))
+	        case NumericSucc(e1) => Succ(Succ(e1))
 	        case Pred(e2) => e2
 	        case StuckTerm(err) => StuckTerm(err)
 	    	case err => StuckTerm(t)
@@ -168,8 +171,7 @@ object Arithmetic extends StandardTokenParsers {
    
   def main(args: Array[String]): Unit = {
     
-    var myData = "if 1 then true else false";
-    myData = "pred succ succ succ false"
+    var myData = "if iszero pred pred 2 then if iszero 0 then true else false else false";
     val tokens = new lexical.Scanner(myData)
    // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Expr)(tokens) match {
