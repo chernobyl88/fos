@@ -40,7 +40,22 @@ object Untyped extends StandardTokenParsers {
   }
   
   def subst(t: Term, x: String, s: Term): Term = t match {
-    case Variable x
+    case Variable(e1) => {
+      if (e1 == x) {
+        s
+      } else {
+        t
+      }
+    }
+    case Abstraction(e1, t1) => {
+      if (e1 == x) {
+        subst(Abstraction(x+"1", subst(t1, x, Variable(x+"1"))), x, s)
+      } else {
+        Abstraction(e1, subst(t1, x, s))
+      }
+    }
+    case Application(t1, t2) => Application(subst(t1, x, s), subst(t2, x, s))
+    case Group(t1) => Group(subst(t1, x, s))
   }
 
   /** Term 't' does not match any reduction rule. */
@@ -52,7 +67,13 @@ object Untyped extends StandardTokenParsers {
    *  @return  the reduced term
    */
   def reduceNormalOrder(t: Term): Term = t match {
-  //   ... To complete ... 
+    case Variable(e1) => t
+    case Application(t1, t2) => t1 match {
+      case Abstraction(e1, t1) => subst(t1, e1, t2)
+      case _ => Application(reduceNormalOrder(t1), reduceNormalOrder(t2))
+    }
+    case Abstraction(e1, t1) => Abstraction(e1, reduceNormalOrder(t1))
+    case Group(t1) => Group(reduceNormalOrder(t1))
   }
 
   /** Call by value reducer. */
