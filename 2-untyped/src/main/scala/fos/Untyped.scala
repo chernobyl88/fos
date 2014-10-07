@@ -32,9 +32,16 @@ object Untyped extends StandardTokenParsers {
 	}
     | failure("illegal start of term"))
     
-  def alpha(t: Term): Term = //..
-  def subst(t: Term, x: String, s: Term): Term = //..
-  def reduceNormalOrder(t: Term): Term = //..
+  def alpha(t: Term): FV = t match {
+    case Variable(x) => FV(List(t.asInstanceOf[Variable]))
+    case Abstraction(x, t) => alpha(t).remove(x)
+    case Application(t1, t2) => alpha(t1) union alpha(t2)
+    case Group(t1) => alpha(t1)
+  }
+  
+  def subst(t: Term, x: String, s: Term): Term = t match {
+    case Variable x
+  }
 
   /** Term 't' does not match any reduction rule. */
   case class NoRuleApplies(t: Term) extends Exception(t.toString)
