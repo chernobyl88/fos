@@ -9,6 +9,10 @@ case class Variable(x: String) extends Term {
   override def toString() = x
 }
 
+case class VariableValue(x: String) extends Term {
+  override def toString() = x
+}
+
 case class Abstraction(x: String, t: Term) extends Term {
   override def toString() = "\\" + x + "." + t 
 }

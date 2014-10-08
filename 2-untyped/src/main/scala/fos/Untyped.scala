@@ -78,7 +78,16 @@ object Untyped extends StandardTokenParsers {
 
   /** Call by value reducer. */
   def reduceCallByValue(t: Term): Term = t match {
-  //   ... To complete ... 
+  	case VariableValue(e1) => t
+    case Application(t1, t2) => t1 match {
+      case Abstraction(e1, t1) => reduceCallByValue(subst(t1, e1, t2))
+      case _ => Application(reduceCallByValue(t1), reduceCallByValue(t2))
+    }
+    case Abstraction(e1, t1) => t1 match{
+      case 
+      Abstraction(e1, reduceCallByValue(t1))  // Boucle infinie? Si t1 ireductible rŽaliser l abstraction
+    } 
+    case Group(t1) => Group(reduceCallByValue(t1)) // Boucle infinie? Si t1 ireductible enlever les parentheses
   }
 
   /** Returns a stream of terms, each being one step of reduction.
