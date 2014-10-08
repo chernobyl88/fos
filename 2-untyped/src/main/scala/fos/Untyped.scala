@@ -72,8 +72,8 @@ object Untyped extends StandardTokenParsers {
       case Abstraction(e1, t1) => reduceNormalOrder(subst(t1, e1, t2))
       case _ => Application(reduceNormalOrder(t1), reduceNormalOrder(t2))
     }
-    case Abstraction(e1, t1) => Abstraction(e1, reduceNormalOrder(t1))
-    case Group(t1) => Group(reduceNormalOrder(t1))
+    case Abstraction(e1, t1) => Abstraction(e1, reduceNormalOrder(t1))  // Boucle infinie? Si t1 ireductible rŽaliser l abstraction
+    case Group(t1) => Group(reduceNormalOrder(t1)) // Boucle infinie? Si t1 ireductible enlever les parentheses
   }
 
   /** Call by value reducer. */
