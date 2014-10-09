@@ -11,22 +11,21 @@ object Untyped extends StandardTokenParsers {
   lexical.delimiters ++= List("(", ")", "\\", ".")
   import lexical.Identifier
 
-  /** Term     ::= AbsOrVar { AbsOrVar }
-   */
+
   def Term: Parser[Term] = (
-	stringLit ^^ {case e1 => {
-			Variable(e1)
+     ident ^^ {case str => {
+			Variable(str)
 		}
 	}
-	| "\\" ~ stringLit ~ "." ~ Term ^^ { case "\\" ~ e1 ~ "." ~ e2 => {
-			Abstraction(e1, e2)
+	| ("\\" ~> ident) ~ ("." ~> Term) ^^ { case str ~ e1 => {
+			Abstraction(str, e1)
 		}
 	}
 	| Term ~ Term ^^ { case e1 ~ e2 => {
 			Application(e1, e2)
 		}
 	}
-	| "(" ~ Term ~ ")" ^^ { case "(" ~ e1 ~ "~" => {
+	| "(" ~> Term <~ ")" ^^ { case e1 => {
 			Group(e1)
 		}
 	}
@@ -121,7 +120,11 @@ object Untyped extends StandardTokenParsers {
 
 
   def main(args: Array[String]): Unit = {
-    val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+    
+    var myData = "\\x . (t)";
+    val tokens = new lexical.Scanner(myData)
+    System.out.println("----------------------------------------------------------");
+   // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>
         println("normal order: ")

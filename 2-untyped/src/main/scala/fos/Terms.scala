@@ -6,23 +6,23 @@ import scala.util.parsing.input.Positional
 abstract class Term extends Positional
 
 case class Variable(x: String) extends Term {
-  override def toString() = x
-}
-
-case class VariableValue(x: String) extends Term {
-  override def toString() = x
+  override def toString() = "Variable("+x+")"
 }
 
 case class Abstraction(x: String, t: Term) extends Term {
-  override def toString() = "\\" + x + "." + t 
+  override def toString() = "Abstraction(" + x + ", " + t + ")"
+ // override def toString() = "\\" + x + "." + t 
 }
 
 case class Application(t1: Term, t2: Term) extends Term {
-  override def toString() = t1 + " " + t2
+  
+  override def toString() = "Application(" + t1 + ", " + t2 + ")"
+  //override def toString() = t1 + " " + t2
 }
 
 case class Group(t: Term) extends Term {
-  override def toString() = "(" + t + ")"
+  override def toString() = "Group(" + t + ")"
+  //override def toString() = "(" + t + ")"
 }
 
 case class FV(t: List[Variable]) extends Term {
