@@ -103,9 +103,9 @@ object Untyped extends StandardTokenParsers {
 	      Abstraction(e1, reduceNormalOrder(t1))
 	    }
 	    case Group(t1) => checkInner(reduceNormalOrder(t1)) match {
-	      case t2: Variable => {
-			    	  throw NoRuleApplies(t2)
-			    }
+//	      case t2: Variable => {
+	//		    	  throw NoRuleApplies(t2)
+		//	    }
 	      case t2 => t2
 	    }
 	    case _ => {
@@ -134,7 +134,7 @@ object Untyped extends StandardTokenParsers {
     }
     case Abstraction(e1, t1) => Abstraction(e1, reduceCallByValue(t1)) // Est conscidéré comme une valeur. Doit-il être traité quand même?
     case Group(t1) => checkInner(reduceCallByValue(t1)) match {
-      case e: Variable => throw NoRuleApplies(e) 
+//      case e: Variable => throw NoRuleApplies(e) 
       case t2 => Group(t2)
     }
     case _ => {
@@ -156,22 +156,41 @@ object Untyped extends StandardTokenParsers {
       case NoRuleApplies(_) =>
         Stream.cons(t, Stream.empty)
     }
-
+object AllDone extends Exception { }
 
   def main(args: Array[String]): Unit = {
     
     var myData = "((\\x. x) y) (\\x. ((((\\y. y)))) ((\\z. z) ((\\ w. w) \\t. t)))";
     val tokens = new lexical.Scanner(myData)
+    var previous = ""
     System.out.println("----------------------------------------------------------");
    // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>
         println("normal order: ")
-        for (t <- path(trees, reduceNormalOrder))
+        try {
+          for (t <- path(trees, reduceNormalOrder)){
+          if(previous == t.toString()){
+            throw AllDone
+          } else {
+        previous = t.toString()
           println(t)
+          }}
+          } catch {
+          	case AllDone =>
+          }
         println("call-by-value: ")
-        for (t <- path(trees, reduceCallByValue))
+        try {
+          for (t <- path(trees, reduceCallByValue)){
+          if(previous == t.toString()){
+            throw AllDone
+          } else {
+        previous = t.toString()
           println(t)
+          }}
+          } catch {
+          	case AllDone =>
+          }
 
       case e =>
         println(e)
