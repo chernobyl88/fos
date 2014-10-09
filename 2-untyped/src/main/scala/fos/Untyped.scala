@@ -21,15 +21,22 @@ object Untyped extends StandardTokenParsers {
 			Abstraction(str, e1)
 		}
 	}
-	| Term ~ Term ^^ { case e1 ~ e2 => {
-			Application(e1, e2)
-		}
-	}
 	| "(" ~> Term <~ ")" ^^ { case e1 => {
 			Group(e1)
 		}
 	}
+	| rep(Term) ^^ {
+		case e1 => {
+			parseApplication(e1)
+		}
+	}
     | failure("illegal start of term"))
+
+  def parseApplication(e2: List[Term]) : Term = e2 match{
+    case h1 :: h2 :: Nil => Group(Application(h1, h2))
+    case h1 :: h2 :: t1 =>  Application(Group(Application(h1, h2)), parseApplication(t1))
+    case h1 :: Nil => h1
+  }
     
   def alpha(t: Term): FV = t match {
     case Variable(x) => FV(List(t.asInstanceOf[Variable]))
@@ -121,7 +128,7 @@ object Untyped extends StandardTokenParsers {
 
   def main(args: Array[String]): Unit = {
     
-    var myData = "\\x . (t)";
+    var myData = "(t x)";
     val tokens = new lexical.Scanner(myData)
     System.out.println("----------------------------------------------------------");
    // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
