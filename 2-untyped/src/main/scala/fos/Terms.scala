@@ -28,7 +28,7 @@ case class Group(t: Term) extends Term {
 case class FV(t: List[Variable]) extends Term {
   
   def remove(s: String): FV = {
-    FV(t.filter(x => x != s))
+    FV(t.filter(x => !(x.toString() eq s)))
   }
   
   def union(t1: FV): FV = {

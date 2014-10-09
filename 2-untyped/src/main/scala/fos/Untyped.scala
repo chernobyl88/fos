@@ -61,6 +61,11 @@ object Untyped extends StandardTokenParsers {
   /** Term 't' does not match any reduction rule. */
   case class NoRuleApplies(t: Term) extends Exception(t.toString)
 
+  def checkInner(t: Term): Term = t match {
+    case Group(t1) => checkInner(t1)
+    case _ => t
+  }
+  
   /** Normal order (leftmost, outermost redex first).
    *
    *  @param t the initial term
@@ -68,26 +73,35 @@ object Untyped extends StandardTokenParsers {
    */
   def reduceNormalOrder(t: Term): Term = t match {
     case Variable(e1) => t
-    case Application(t1, t2) => t1 match {
-      case Abstraction(e1, t1) => reduceNormalOrder(subst(t1, e1, t2))
+    case Application(t1, t2) => checkInner(t1) match {
+      case Abstraction(e1, t3) => t1 match {
+        case Abstraction(e2, t4) => reduceNormalOrder(subst(t3, e1, t2))
+        case Group(t4) => Group(reduceNormalOrder(Application(t4, t2)))
+      }
       case _ => Application(reduceNormalOrder(t1), reduceNormalOrder(t2))
     }
-    case Abstraction(e1, t1) => Abstraction(e1, reduceNormalOrder(t1))  // Boucle infinie? Si t1 ireductible rŽaliser l abstraction
-    case Group(t1) => Group(reduceNormalOrder(t1)) // Boucle infinie? Si t1 ireductible enlever les parentheses
+    case Abstraction(e1, t1) => Abstraction(e1, reduceNormalOrder(t1))
+    case Group(t1) => checkInner(reduceNormalOrder(t1)) match {
+      case Variable(e1) => Variable(e1)
+      case t2 => Group(t2)
+    }
   }
 
   /** Call by value reducer. */
   def reduceCallByValue(t: Term): Term = t match {
-  	case VariableValue(e1) => t
-    case Application(t1, t2) => t1 match {
-      case Abstraction(e1, t1) => reduceCallByValue(subst(t1, e1, t2))
+  	case Variable(e1) => t
+    case Application(t1, t2) => checkInner(reduceCallByValue(t2)) match {
+      case Abstraction(e2, t3) =>  checkInner(t1) match {
+	      case Abstraction(e1, t4) => reduceCallByValue(subst(Abstraction(e1, t4), e1, Abstraction(e2, t3)))
+	      case _ => Application(reduceCallByValue(t1), reduceCallByValue(t2))
+      }
       case _ => Application(reduceCallByValue(t1), reduceCallByValue(t2))
     }
-    case Abstraction(e1, t1) => t1 match{
-      case 
-      Abstraction(e1, reduceCallByValue(t1))  // Boucle infinie? Si t1 ireductible rŽaliser l abstraction
-    } 
-    case Group(t1) => Group(reduceCallByValue(t1)) // Boucle infinie? Si t1 ireductible enlever les parentheses
+    case Abstraction(e1, t1) => Abstraction(e1, reduceCallByValue(t1))
+    case Group(t1) => checkInner(reduceCallByValue(t1)) match {
+      case Variable(e1) => Variable(e1)
+      case t2 => Group(t2)
+    }
   }
 
   /** Returns a stream of terms, each being one step of reduction.
