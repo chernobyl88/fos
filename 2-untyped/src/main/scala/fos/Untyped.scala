@@ -11,8 +11,8 @@ object Untyped extends StandardTokenParsers {
   lexical.delimiters ++= List("(", ")", "\\", ".")
   import lexical.Identifier
 
-
-  def Term: Parser[Term] = (
+  
+  def Elem: Parser[Term] = (
      ident ^^ {case str => {
 			Variable(str)
 		}
@@ -25,17 +25,30 @@ object Untyped extends StandardTokenParsers {
 			Group(e1)
 		}
 	}
-	| rep(Term) ^^ {
+  )
+  
+  def Term: Parser[Term] = (
+	rep1(Elem) ^^ {
 		case e1 => {
+			println("Application");
 			parseApplication(e1)
 		}
 	}
     | failure("illegal start of term"))
 
   def parseApplication(e2: List[Term]) : Term = e2 match{
-    case h1 :: h2 :: Nil => Group(Application(h1, h2))
-    case h1 :: h2 :: t1 =>  Application(Group(Application(h1, h2)), parseApplication(t1))
-    case h1 :: Nil => h1
+    case h1 :: h2 :: Nil => {
+      println(3)
+    	Group(Application(h1, h2))
+    }
+    case h1 :: h2 :: t1 => {
+      println(2)
+    	Application(Group(Application(h1, h2)), parseApplication(t1))
+    }
+    case h1 :: Nil => {
+      println(3);
+      h1
+    }
   }
     
   def alpha(t: Term): FV = t match {
@@ -128,7 +141,7 @@ object Untyped extends StandardTokenParsers {
 
   def main(args: Array[String]): Unit = {
     
-    var myData = "(t x)";
+    var myData = "t x";
     val tokens = new lexical.Scanner(myData)
     System.out.println("----------------------------------------------------------");
    // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
