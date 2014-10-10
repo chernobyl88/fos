@@ -93,9 +93,15 @@ object Untyped extends StandardTokenParsers {
 	    case Application(t1, t2) => checkInner(t1) match {
 	      case Abstraction(e1, t3) => t1 match {
 	        case Abstraction(e2, t4) => {
-	          (subst(t4, e2, t2))
+	          subst(t4, e2, t2)
 	        }
-	        case Group(t4) => Group(reduceNormalOrder(Application(checkInner(t4), t2)))
+	        case Group(Abstraction(e2, t4)) => {
+	          subst(t4, e2, t2)
+	        }
+	        case Group(t4) => {
+	          println(Application(checkInner(t4), t2))
+	          Group(reduceNormalOrder(Application(checkInner(t4), t2)))
+	        }
 	      }
 	      case _ => Application(reduceNormalOrder(t1), reduceNormalOrder(t2)) // <- s'arrête sur la première variable
 	    }
@@ -160,7 +166,8 @@ object Untyped extends StandardTokenParsers {
 
   def main(args: Array[String]): Unit = {
     
-    var myData = "((\\x. x) y) (\\x. ((((\\y. y)))) ((\\z. z) ((\\ w. w) \\t. t)))";
+    //var myData = "((\\x. x) y) (\\x. ((((\\y. y)))) ((\\z. z) ((\\ w. w) \\t. t)))";
+    var myData = "((\\x. x) y)";
     val tokens = new lexical.Scanner(myData)
     System.out.println("----------------------------------------------------------");
    // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
