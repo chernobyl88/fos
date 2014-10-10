@@ -53,7 +53,9 @@ object Untyped extends StandardTokenParsers {
   def alpha(t: Term): FV = t match {
     case Variable(x) => FV(List(t.asInstanceOf[Variable]))
     case Abstraction(x, t) => alpha(t).remove(x)
-    case Application(t1, t2) => alpha(t1) union alpha(t2)
+    case Application(t1, t2) => {
+      alpha(t1) union alpha(t2)
+    }
     case Group(t1) => alpha(t1)
   }
   
@@ -66,7 +68,7 @@ object Untyped extends StandardTokenParsers {
       }
     }
     case Abstraction(e1, t1) => {
-      if (e1 == x) {
+      if (alpha(s) contains x) {
         subst(Abstraction(x+"1", subst(t1, x, Variable(x+"1"))), x, s)
       } else {
         Abstraction(e1, subst(t1, x, s))
@@ -94,7 +96,11 @@ object Untyped extends StandardTokenParsers {
 	    case Application(t1, t2) => checkInner(t1) match {
 	      case Abstraction(e1, t3) => t1 match {
 	        case Abstraction(e2, t4) => {
-	          subst(t4, e2, t2)
+	          if (alpha(t2) contains e2) {
+	        	  subst(t4, e2, subst(t2, e2, Variable(e2+"1")))
+	          } else {
+	        	  subst(t4, e2, t2) 
+	          }
 	        }
 	        case Group(t4) => {
 	          Group(inner(Application(checkInner(t4), t2)))
@@ -130,10 +136,14 @@ object Untyped extends StandardTokenParsers {
     def inner(t: Term): Term = t match {
 	    case Application(t1, t2) => {
 	      checkInner(inner(t2)) match {
-		      case Abstraction(e2, t3) =>  {
+		      case a1: Abstraction =>  {
 		        checkInner(t1) match {
 				      case Abstraction(e1, t4) => {
-				        subst(Abstraction(e1, t4), e1, Abstraction(e2, t3))
+				        if (alpha(a1) contains e1) {
+				        	subst(t4, e1, subst(a1, e1, Variable(e1+"1")))
+				        } else {
+				        	subst(t4, e1, a1) 
+				        }
 				      }
 				      case _ => {
 				        Application(inner(t1), inner(t2))
@@ -182,7 +192,7 @@ object Untyped extends StandardTokenParsers {
 
   def main(args: Array[String]): Unit = {
     
-    var myData = "\\y. ((\\x.x) (\\z.z))";
+    var myData = "((\\x. x) y) (((((\\y. y)))) ((\\z. z) ((\\ w. w) \\t. t)))";
     //var myData = "((\\x. x) y)";
     val tokens = new lexical.Scanner(myData)
     System.out.println("----------------------------------------------------------");

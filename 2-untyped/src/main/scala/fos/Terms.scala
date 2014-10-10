@@ -25,6 +25,20 @@ case class Group(t: Term) extends Term {
 
 case class FV(t: List[Variable]) extends Term {
   
+  override def toString() = {
+    def recur(t: List[Variable]) : String = t match {
+      case e1 :: e2 :: elem => e1.toString + ", " + recur(e2 :: elem)
+      case e1 :: Nil => e1.toString + "]"
+      case Nil => "]"
+    }
+    
+    "[" + recur(t)
+  }
+  
+  def contains(x: String): Boolean = {
+    t.exists(p => p.x == x)
+  }
+  
   def remove(s: String): FV = {
     FV(t.filter(x => !(x.toString() eq s)))
   }
@@ -34,8 +48,8 @@ case class FV(t: List[Variable]) extends Term {
       t1 match {
         case e1 :: l => {
           t2.exists(p => e1.x == p.x) match {
-            case true => recUnion(l, t2, e1 :: ret)
-            case _ => recUnion(l, t2, ret)
+            case true => recUnion(l, t2, ret)
+            case false => recUnion(l, t2, e1 :: ret)
           }
         }
         case _ => {
