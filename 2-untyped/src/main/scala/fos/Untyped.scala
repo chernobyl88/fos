@@ -183,7 +183,7 @@ object AllDone extends Exception { }
 
   def main(args: Array[String]): Unit = {
     
-    var myData = "((\\x. x)) (\\x. ((((\\y. y)))) ((\\z. z) ((\\ w. w) \\t. t)))";
+    var myData = "\\y. ((\\x.x) (\\z.z))";
     //var myData = "((\\x. x) y)";
     val tokens = new lexical.Scanner(myData)
     System.out.println("----------------------------------------------------------");
