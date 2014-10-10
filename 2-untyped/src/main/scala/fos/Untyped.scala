@@ -179,7 +179,6 @@ object Untyped extends StandardTokenParsers {
       case NoRuleApplies(_) =>
         Stream.cons(t, Stream.empty)
     }
-object AllDone extends Exception { }
 
   def main(args: Array[String]): Unit = {
     
