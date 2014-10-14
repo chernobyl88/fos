@@ -149,18 +149,23 @@ object Untyped extends StandardTokenParsers {
 	    case Application(t1, t2) => {
 	      checkInner(inner(t2)) match {
 		      case a1: Abstraction =>  {
-		        checkInner(t1) match {
-				      case Abstraction(e1, t4) => {
-				        if (alpha(a1) contains e1) {
-				        	subst(t4, e1, subst(a1, e1, Variable(e1+"1")))
-				        } else {
-				        	subst(t4, e1, a1) 
-				        }
+		        checkInner(t2) match {
+		          case a2: Abstraction => {
+			        checkInner(t1) match {
+					      case Abstraction(e1, t4) => {
+					        if (alpha(a1) contains e1) {
+					        	subst(t4, e1, subst(a1, e1, Variable(e1+"1")))
+					        } else {
+					        	subst(t4, e1, a1) 
+					        }
+					      }
+					      case _ => {
+					        Application(inner(t1), inner(t2))
+					      }
 				      }
-				      case _ => {
-				        Application(inner(t1), inner(t2))
-				      }
-			      }
+		          }
+		          case _ => Application(t1, inner(t2))
+		        }
 		      }
 		      case _ => {
 		        Application(inner(t1), inner(t2))
