@@ -35,6 +35,9 @@ object Untyped extends StandardTokenParsers {
 	}
     | failure("illegal start of term"))
 
+   /** 
+    *  Manage the parsing of the Applications 
+    */
   def parseApplication(e2: List[Term]) : Term = e2 match{
     case h1 :: h2 :: Nil => {
     	Application(h1, h2)
@@ -50,6 +53,9 @@ object Untyped extends StandardTokenParsers {
     }
   }
     
+  /** 
+   *  Manage the names of the variables
+   */
   def alpha(t: Term): FV = t match {
     case Variable(x) => FV(List(t.asInstanceOf[Variable]))
     case Abstraction(x, t) => alpha(t).remove(x)
@@ -59,6 +65,9 @@ object Untyped extends StandardTokenParsers {
     case Group(t1) => alpha(t1)
   }
   
+  /** 
+   *  Replace all character by a term 
+   */
   def subst(t: Term, x: String, s: Term): Term = t match {
     case Variable(e1) => {
       if (e1 == x) {
@@ -81,6 +90,9 @@ object Untyped extends StandardTokenParsers {
   /** Term 't' does not match any reduction rule. */
   case class NoRuleApplies(t: Term) extends Exception(t.toString)
 
+  /** 
+   *  Delete all the useless brackets 
+   */
   def checkInner(t: Term): Term = t match {
     case Group(t1) => checkInner(t1)
     case _ => t
