@@ -77,10 +77,15 @@ object Untyped extends StandardTokenParsers {
       }
     }
     case Abstraction(e1, t1) => {
+      if(x==e1){
+        Abstraction(e1,t1)
+      }
+      else{
       if (alpha(s) contains x) {
         subst(Abstraction(x+"1", subst(t1, x, Variable(x+"1"))), x, s)
       } else {
         Abstraction(e1, subst(t1, x, s))
+      }
       }
     }
     case Application(t1, t2) => Application(subst(t1, x, s), subst(t2, x, s))
@@ -118,7 +123,13 @@ object Untyped extends StandardTokenParsers {
 	          Group(inner(Application(checkInner(t4), t2)))
 	        }
 	      }
-	      case _ => Application(inner(t1), inner(t2))
+	      case _ => {
+	        var s1 = inner(t1)
+	        if (s1.toString() == t1.toString()){
+	          Application(s1, inner(t2))
+	        }
+	        else Application(s1,t2)
+	      }
 	    }
 	    case Abstraction(e1, t1) => {
 	      Abstraction(e1, inner(t1))
@@ -147,7 +158,7 @@ object Untyped extends StandardTokenParsers {
   def reduceCallByValue(t: Term): Term = {
     def inner(t: Term): Term = t match {
 	    case Application(t1, t2) => {
-	      checkInner(inner(t2)) match {
+	      checkInner(t2) match {
 		      case a1: Abstraction =>  {
 		        checkInner(t2) match {
 		          case a2: Abstraction => {
@@ -163,13 +174,18 @@ object Untyped extends StandardTokenParsers {
 					        Application(inner(t1), inner(t2))
 					      }
 				      }
+
 		          }
 		          case _ => Application(t1, inner(t2))
 		        }
 		      }
 		      case _ => {
-		        Application(inner(t1), inner(t2))
-		      }
+	        var s1 = inner(t1)
+	        if (s1.toString() == t1.toString()){
+	          Application(s1, inner(t2))
+	        }
+	        else Application(s1,t2)
+	      }
 	      }
 	    }
 	    case Abstraction(e1, t1) => Abstraction(e1, inner(t1))
@@ -209,8 +225,11 @@ object Untyped extends StandardTokenParsers {
 
   def main(args: Array[String]): Unit = {
     
-
-    val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+		  var myData = "((\\x. x) \\y.y) (((((\\y. y)))) ((\\z. z) ((\\ w. w) \\t. t)) x)";
+     //var myData = "((\\y. y) \\y.y)";
+     val tokens = new lexical.Scanner(myData)
+     System.out.println("----------------------------------------------------------"); 
+     //tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>
         println("normal order: ")
