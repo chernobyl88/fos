@@ -77,10 +77,15 @@ object Untyped extends StandardTokenParsers {
       }
     }
     case Abstraction(e1, t1) => {
+      if(x==e1){
+        Abstraction(e1,t1)
+      }
+      else{
       if (alpha(s) contains x) {
         subst(Abstraction(x+"1", subst(t1, x, Variable(x+"1"))), x, s)
       } else {
         Abstraction(e1, subst(t1, x, s))
+      }
       }
     }
     case Application(t1, t2) => Application(subst(t1, x, s), subst(t2, x, s))
@@ -221,7 +226,7 @@ object Untyped extends StandardTokenParsers {
   def main(args: Array[String]): Unit = {
     
 		  var myData = "((\\x. x) \\y.y) (((((\\y. y)))) ((\\z. z) ((\\ w. w) \\t. t)) x)";
-     //var myData = "((\\x. x) y)";
+     //var myData = "((\\y. y) \\y.y)";
      val tokens = new lexical.Scanner(myData)
      System.out.println("----------------------------------------------------------"); 
      //tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
