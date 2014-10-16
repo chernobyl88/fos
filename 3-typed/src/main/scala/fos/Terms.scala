@@ -66,16 +66,30 @@ case class Second(t: Term) extends Term {
 }
   //   ... To complete ... 
 /** Abstract Syntax Trees for types. */
-abstract class Type extends Term
+abstract class Type extends Term {
+  def sameType(t1: Type) : Boolean
+}
 
 case class TypeBool extends Type {
   override def toString() = "Bool"
+  override def sameType(t1: Type): Boolean = t1 match {
+    case TypeBool() => true
+    case _ => false
+  }
 }
 
 case class TypeNat extends Type {
   override def toString() = "Nat"
+  override def sameType(t1: Type): Boolean = t1 match {
+    case TypeNat() => true
+    case _ => false
+  }
 }
 
-case class TypeFuncFunctionType(t1: Type, t2:Type) extends Type {
+case class FunctionType(t1: Type, t2:Type) extends Type {
   override def toString() = t1 + "->"+ t2
+  override def sameType(t: Type): Boolean = t match {
+    case FunctionType(a1, a2) => t1.sameType(a1) && t2.sameType(a2)
+    case _ => false
+  }
 }
