@@ -15,7 +15,11 @@ object SimplyTyped extends StandardTokenParsers {
   /** Term     ::= SimpleTerm { SimpleTerm }
    */
   def Term: Parser[Term] = positioned(
-  //   ... To complete ... 
+	rep1(SimpleTerm) ^^ {
+		case e1 => {
+			parseApplication(e1)
+		}
+	}
     | failure("illegal start of term"))
 
   /** SimpleTerm ::= "true"
@@ -46,7 +50,30 @@ object SimplyTyped extends StandardTokenParsers {
     | failure("illegal start of type"))
 
   //   ... To complete ... 
-
+  def parseApplication(e2: List[Term]) : Term = e2.reverse match{
+    case h1 :: Nil => {
+      h1
+    }
+    case h1 :: t1 => {
+    	Application(parseApplication(t1.reverse), h1)
+    }
+    case Nil => {
+      throw NoRuleApplies(null)
+    }
+  }
+  
+  def parseType(e2: List[Type]) : Term = e2 match{
+    case h1 :: Nil => {
+      h1
+    }
+    case h1 :: t1 => {
+    	FunctionType(h1, parseApplication(t1))
+    }
+    case Nil => {
+      throw NoRuleApplies(null)
+    }
+  }
+    
   /** Thrown when no reduction rule applies to the given term. */
   case class NoRuleApplies(t: Term) extends Exception(t.toString)
 

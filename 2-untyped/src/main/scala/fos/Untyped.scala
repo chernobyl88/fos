@@ -38,15 +38,12 @@ object Untyped extends StandardTokenParsers {
    /** 
     *  Manage the parsing of the Applications 
     */
-  def parseApplication(e2: List[Term]) : Term = e2 match{
-    case h1 :: h2 :: Nil => {
-    	Application(h1, h2)
-    }
-    case h1 :: h2 :: t1 => {
-    	Application(Application(h1, h2), parseApplication(t1))
-    }
+  def parseApplication(e2: List[Term]) : Term = e2.reverse match{
     case h1 :: Nil => {
       h1
+    }
+    case h1 :: t1 => {
+    	Application(parseApplication(t1.reverse), h1)
     }
     case Nil => {
       throw NoRuleApplies(null)
@@ -224,12 +221,12 @@ object Untyped extends StandardTokenParsers {
     }
 
   def main(args: Array[String]): Unit = {
-    /*
-		  var myData = "((\\x. x) \\y.y) (((((\\y. y)))) ((\\z. z) ((\\ w. w) \\t. t)))";
+    //*
+		  var myData = "a b c d e f g h i j k";
      //var myData = "((\\y. y) \\y.y)";
      val tokens = new lexical.Scanner(myData)
-     System.out.println("----------------------------------------------------------");*/ 
-     val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+     System.out.println("----------------------------------------------------------");
+     //val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>
         println("normal order: ")
