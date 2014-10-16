@@ -109,12 +109,12 @@ object SimplyTyped extends StandardTokenParsers {
     }
   }
   
-  def parseType(e2: List[Type]) : Term = e2 match{
+  def parseType(e2: List[Type]) : Type = e2 match{
     case h1 :: Nil => {
       h1
     }
     case h1 :: t1 => {
-    	FunctionType(h1, parseApplication(t1))
+    	FunctionType(h1, parseType(t1))
     }
     case Nil => {
       throw NoRuleApplies(null)

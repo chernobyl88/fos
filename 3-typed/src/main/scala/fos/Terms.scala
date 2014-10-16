@@ -5,18 +5,23 @@ import scala.util.parsing.input.Positional
 trait Numeric;
 trait Value;
 /** Abstract Syntax Trees for terms. */
-abstract class Term extends Positional
+abstract class Term extends Positional {
+  def getType() : Type
+}
 
 case object True extends Term {
   override def toString() = "true"
+  override def getType() = TypeBool()
 }
 
 case class IsZero(t: Term) extends Term {
   override def toString() = "IsZero(" + t + ")"
+  override def getType() = FunctionType(TypeNat(), TypeBool())
 }
 
 case class Pred(t: Term) extends Term {
   override def toString() = "Pred(" + t + ")"
+  override def getType() = FunctionType(TypeNat(), TypeNat())
 }
 case class Succ(t: Term) extends Term {
   override def toString() = "Succ(" + t + ")"
@@ -68,6 +73,7 @@ case class Second(t: Term) extends Term {
 /** Abstract Syntax Trees for types. */
 abstract class Type extends Term {
   def sameType(t1: Type) : Boolean
+  def finalType() : Type = this
 }
 
 case class TypeBool extends Type {
@@ -76,6 +82,7 @@ case class TypeBool extends Type {
     case TypeBool() => true
     case _ => false
   }
+  override def finalType() : Type = this
 }
 
 case class TypeNat extends Type {
@@ -84,12 +91,17 @@ case class TypeNat extends Type {
     case TypeNat() => true
     case _ => false
   }
+  override def finalType() : Type = this
 }
 
 case class FunctionType(t1: Type, t2:Type) extends Type {
   override def toString() = t1 + "->"+ t2
-  override def sameType(t: Type): Boolean = t match {
-    case FunctionType(a1, a2) => t1.sameType(a1) && t2.sameType(a2)
-    case _ => false
+  override def sameType(t: Type): Boolean = {
+    def checkFull(t: Type):Boolean = t match {
+      	case FunctionType(a1, a2) => t1.sameType(a1) && t2.sameType(a2)
+    	case _ => false
+    }
+    checkFull(t) || t2.sameType(t) || t.sameType(this)
   }
+  override def finalType() = t2.finalType()
 }
