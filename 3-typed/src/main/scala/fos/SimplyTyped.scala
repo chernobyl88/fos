@@ -36,16 +36,55 @@ object SimplyTyped extends StandardTokenParsers {
   def SimpleTerm: Parser[Term] = positioned(
       "true"          ^^^ True
     | "false"         ^^^ False
-  //   ... To complete ... 
+    | "0" ^^^ Zero
+      | "if" ~ Term ~ "then" ~ Term ~ "else" ~ Term ^^ {case "if" ~ e1 ~ "then" ~ e2 ~ "else" ~ e3 => {
+    	  If(e1, e2, e3)
+      	}
+      }
+      | "succ" ~> Term ^^ { case e1 => {
+    	  Succ(e1)
+      	}
+      }
+      | "pred" ~> Term ^^ { case e1 => {
+    	  Pred(e1)
+      	}
+      }
+      | "iszero" ~> Term ^^ { case e1 => {
+    	  IsZero(e1)
+      	}
+      }
+      | numericLit ^^ {case num => {
+    	  decomposeNum(num.toInt)
+      	}
+      }
+    |ident ^^ {case str => {
+			Variable(str)
+		}
+	}
+	| ("\\" ~> ident) ~ (":" ~> Type) ~ ("." ~> Term) ^^ { case str ~ t1 ~ e1 => {
+			Abstraction(str,t1, e1)
+		}
+	}
+	| "(" ~> Term <~ ")" ^^ { case e1 => {
+			Group(e1)
+		}
+	}
     | failure("illegal start of simple term"))
 
   /** Type       ::= SimpleType [ "->" Type ]
    */
   def Type: Parser[Type] = positioned(
-  //   ... To complete ... 
-    | failure("illegal start of type"))
+ failure("illegal start of type"))
 
   //   ... To complete ... 
+    
+   def decomposeNum(num: Int) : Term = {
+    if (num <= 0) {
+      Zero
+    } else {
+      NumericSucc(decomposeNum(num - 1))
+    }
+  }
 
   /** Thrown when no reduction rule applies to the given term. */
   case class NoRuleApplies(t: Term) extends Exception(t.toString)
