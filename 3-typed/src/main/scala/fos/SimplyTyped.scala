@@ -94,7 +94,15 @@ object SimplyTyped extends StandardTokenParsers {
   /** Type       ::= SimpleType [ "->" Type ]
    */
   def Type: Parser[Type] = positioned(
- failure("illegal start of type"))
+		  
+      "Bool" ^^^ TypeBool()
+      | "Nat" ^^^ TypeNat()
+      | Type ~ "->" ~ Type ^^{
+        case t1 ~ "->" ~ t2 =>{
+          FunctionType(t1, t2)
+        }
+      }
+      |failure("illegal start of type"))
 
   //   ... To complete ... 
   def parseApplication(e2: List[Term]) : Term = e2.reverse match{
