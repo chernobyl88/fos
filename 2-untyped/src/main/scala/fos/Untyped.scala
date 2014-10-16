@@ -224,12 +224,12 @@ object Untyped extends StandardTokenParsers {
     }
 
   def main(args: Array[String]): Unit = {
-    
-		  var myData = "((\\x. x) \\y.y) (((((\\y. y)))) ((\\z. z) ((\\ w. w) \\t. t)) x)";
+    /*
+		  var myData = "((\\x. x) \\y.y) (((((\\y. y)))) ((\\z. z) ((\\ w. w) \\t. t)))";
      //var myData = "((\\y. y) \\y.y)";
      val tokens = new lexical.Scanner(myData)
-     System.out.println("----------------------------------------------------------"); 
-     //tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+     System.out.println("----------------------------------------------------------");*/ 
+     val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>
         println("normal order: ")
