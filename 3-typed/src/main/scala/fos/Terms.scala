@@ -62,7 +62,7 @@ case class First(t: Term) extends Term {
 }
 
 case class Second(t: Term) extends Term {
-  override def toString() = "scd" + t 
+  override def toString() = "snd" + t 
 }
   //   ... To complete ... 
 /** Abstract Syntax Trees for types. */
