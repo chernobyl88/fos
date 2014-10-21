@@ -25,13 +25,25 @@ case object True extends Term {
 
 case class IsZero(t: Term) extends Term {
   override def toString() = "IsZero(" + t + ")"
-  override def getType() = checkInnerFunction(t.getType(), TypeBool())
+  override def getType() = {
+    if (t.getType.sameType(TypeNat())) {
+      checkInnerFunction(t.getType(), TypeBool())
+    } else {
+      ErrorType()
+    }
+  }
   override def setType(x: String, T: Type) = t.setType(x, T)
 }
 
 case class Pred(t: Term) extends Term {
   override def toString() = "Pred(" + t + ")"
-  override def getType() = checkInnerFunction(t.getType, TypeNat())
+  override def getType() = {
+    if (t.getType.sameType(TypeNat())) {
+      checkInnerFunction(t.getType(), TypeNat())
+    } else {
+      ErrorType()
+    }
+  }
   override def setType(x: String, T: Type) = t.setType(x, T)
 }
 case class Succ(t: Term) extends Term {
@@ -152,6 +164,12 @@ case class TypeNat extends Type {
     case _ => false
   }
   override def finalType() : Type = this
+}
+
+case class ErrorType extends Type {
+  override def toString() = "Error on type"
+  override def sameType(t1: Type): Boolean = false
+  override def finalType() : Type = this  
 }
 
 case class FunctionType(t1: Type, t2:Type) extends Type {
