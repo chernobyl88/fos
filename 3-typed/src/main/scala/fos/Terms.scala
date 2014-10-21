@@ -67,7 +67,7 @@ case class If(t1: Term, t2: Term, t3: Term) extends Term {
   override def toString() = "If(" + t1 + "," + t2 + "," + t3 + ")"
   override def getType = {
     if (t1.getType.sameType(TypeBool()) && t2.getType.sameType(t3.getType)) {
-      t2.getType
+      FunctionType(t1.getType, t1.getType)
     } else {
       if (t1.getType.sameType(TypeBool())) {
     	  ErrorType(t2.getType, t3.getType)
@@ -135,7 +135,7 @@ case class Application(t1: Term, t2: Term) extends Term {
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = {
     if (t1.getType.sameType(t2.getType))
-      t1.getType
+      t1.getType // TODO Est-ce qu'il faudrait une pair? {t1.getType, t2.getType}
     else
       ErrorType(t1.getType, t2.getType)
   }
@@ -152,7 +152,7 @@ case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = {
     if (t1.getType.sameType(t2.getType))
-      t1.getType
+      FunctionType(t1.getType, t2.getType)
     else
       ErrorType(t1.getType, t2.getType)
   }
@@ -169,7 +169,7 @@ case class First(t: Term) extends Term {
 
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def getType() = t.getType match {
-      case PairType(_, e) => e.getType
+      case PairType(e, _) => FunctionType(t.getType, e.getType)
       case e => PairExpected(e)
     }
 }
@@ -179,12 +179,11 @@ case class Second(t: Term) extends Term {
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def getType() = {
     t.getType match {
-      case PairType(_, e) => e.getType
+      case PairType(_, e) => FunctionType(t.getType, e.getType)
       case e => PairExpected(e)
     }
   }
 }
-  //   ... To complete ... 
 
 trait TypeError
 
