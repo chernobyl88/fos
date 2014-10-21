@@ -157,7 +157,7 @@ object SimplyTyped extends StandardTokenParsers {
   }
 
   /** Is the given term a value? */
-  def isValue(t: Term): Boolean = isNumericVal(t) match {
+  def isValue(t: Term): Boolean = t.getType match {
     case true => true
     case false => t match {
       case True => true
