@@ -29,7 +29,7 @@ case class IsZero(t: Term) extends Term {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(t.getType(), TypeBool())
     } else {
-      ErrorType()
+      ErrorType(t.getType, TypeNat())
     }
   }
   override def setType(x: String, T: Type) = t.setType(x, T)
@@ -41,14 +41,18 @@ case class Pred(t: Term) extends Term {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(t.getType(), TypeNat())
     } else {
-      ErrorType()
+      ErrorType(t.getType, TypeNat())
     }
   }
   override def setType(x: String, T: Type) = t.setType(x, T)
 }
 case class Succ(t: Term) extends Term {
   override def toString() = "Succ(" + t + ")"
-  override def getType() = checkInnerFunction(t.getType, TypeNat())
+    if (t.getType.sameType(TypeNat())) {
+      checkInnerFunction(t.getType(), TypeNat())
+    } else {
+      ErrorType(t.getType, TypeNat())
+    }
   override def setType(x: String, T: Type) = t.setType(x, T)
 }
 case class NumericSucc(t: Term) extends Term with Numeric with Value {
@@ -59,7 +63,15 @@ case class NumericSucc(t: Term) extends Term with Numeric with Value {
 
 case class If(t1: Term, t2: Term, t3: Term) extends Term {
   override def toString() = "If(" + t1 + "," + t2 + "," + t3 + ")"
-  override def getType() = t2.getType // ??? sure? maybe check T3? finalType? Other? Exception? Nothing?
+    if (t1.getType.sameType(TypeBool()) && t2.getType.sameType(t3.getType)) {
+      t2.getType
+    } else {
+      if (t1.getType.sameType(TypeBool())) {
+    	  ErrorType(t2.getType, t3.getType)
+      } else {
+        ErrorType(t1.getType, TypeBool())
+      }
+    }
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T) && t3.setType(x, T)
 }
 case object False extends Term {
@@ -74,8 +86,19 @@ case class Variable(x: String) extends Term {
   var cType: Type = null;
   override def toString() = x
   override def setType(x1:String, T: Type) : Boolean = {
-    if (x1 == x) //Check if already defined?
-    	cType = T;
+    if (x1 == x) {
+	    this.getType match {
+	      case NoTypeAssigned() => cType = T
+	      case e:AlreadyAssigned => false
+	      case _ => {
+	        if ((T.sameType(cType)) == false) {
+	          cType = AlreadyAssigned(cType, T)
+	          false
+	        }
+	      } 
+	    }
+      
+    }
     true
   }
   override def getType() = {
@@ -99,7 +122,12 @@ case class Abstraction(x: String,T:Type, t: Term) extends Term {
 case class Application(t1: Term, t2: Term) extends Term {
   override def toString() = t1 + " " + t2
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
-  override def getType() = t1.getType //Like for if, what for T2?
+  override def getType() = {
+    if (t1.getType.sameType(t2.getType))
+      t1.getType
+    else
+      ErrorType(t1.getType, t2.getType)
+  }
 }
 
 case class Group(t: Term) extends Term {
@@ -111,13 +139,23 @@ case class Group(t: Term) extends Term {
 case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
   override def toString() = "let "+x+":"+T+"="+t1+" in " + t2
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
-  override def getType() = t1.getType() //Like for if, what for t2?
+  override def getType() = {
+    if (t1.getType.sameType(t2.getType))
+      t1.getType
+    else
+      ErrorType(t1.getType, t2.getType)
+  }
 }
 
 case class Pair(t1: Term,t2: Term) extends Term {
   override def toString() = "{" + t1+","+t2 + "}"
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
-  override def getType() = t1.getType() //Like for if, what for t2?
+  override def getType() = {
+    if (t1.getType.sameType(t2.getType))
+      t1.getType
+    else
+      ErrorType(t1.getType, t2.getType)
+  }
 }
 
 case class First(t: Term) extends Term {
@@ -166,8 +204,14 @@ case class TypeNat extends Type {
   override def finalType() : Type = this
 }
 
-case class ErrorType extends Type {
-  override def toString() = "Error on type"
+case class ErrorType(t1: Type, t2: Type) extends Type {
+  override def toString() = "Error on type: Expected [" + t2 + "] and was [" + t1 + "]"
+  override def sameType(t1: Type): Boolean = false
+  override def finalType() : Type = this  
+}
+
+case class AlreadyAssigned(t1: Type, t2: Type) extends Type {
+  override def toString() = "Type for var already deffined: Was [" + t1 + "] and try to assign [" + t2 + "]"
   override def sameType(t1: Type): Boolean = false
   override def finalType() : Type = this  
 }
