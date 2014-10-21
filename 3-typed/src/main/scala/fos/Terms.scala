@@ -161,25 +161,28 @@ case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
 case class Pair(t1: Term,t2: Term) extends Term {
   override def toString() = "{" + t1+","+t2 + "}"
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
-  override def getType() = {
-    if (t1.getType.sameType(t2.getType))
-      t1.getType
-    else
-      ErrorType(t1.getType, t2.getType)
-  }
+  override def getType() = PairType(t1.getType, t2.getType)
 }
 
 case class First(t: Term) extends Term {
   override def toString() = "fst" + t 
 
   override def setType(x: String, T: Type) = t.setType(x, T)
-  override def getType() = checkInnerFunction(t.getType, t.getType.finalType());
+  override def getType() = t.getType match {
+      case PairType(_, e) => e.getType
+      case e => PairExpected(e)
+    }
 }
 
 case class Second(t: Term) extends Term {
   override def toString() = "scd" + t 
   override def setType(x: String, T: Type) = t.setType(x, T)
-  override def getType() = checkInnerFunction(t.getType, t.getType.finalType());
+  override def getType() = {
+    t.getType match {
+      case PairType(_, e) => e.getType
+      case e => PairExpected(e)
+    }
+  }
 }
   //   ... To complete ... 
 
@@ -255,6 +258,13 @@ case class ErrorType(t1: Type, t2: Type) extends Type with TypeError{
 
 case class AlreadyAssigned(t1: Type, t2: Type) extends Type with TypeError{
   override def toString() = "Type for var already deffined: Was [" + t1 + "] and try to assign [" + t2 + "]"
+  override def sameType(t1: Type): Boolean = false
+  override def finalType() : Type = this  
+  override def getType() = this
+}
+
+case class PairExpected(t: Type) extends Type with TypeError{
+  override def toString() = "pair type expected but " + t + " found"
   override def sameType(t1: Type): Boolean = false
   override def finalType() : Type = this  
   override def getType() = this
