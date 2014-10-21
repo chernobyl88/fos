@@ -25,19 +25,24 @@ case class Pred(t: Term) extends Term {
 }
 case class Succ(t: Term) extends Term {
   override def toString() = "Succ(" + t + ")"
+  override def getType() = FunctionType(TypeNat(), TypeNat())
 }
 case class NumericSucc(t: Term) extends Term with Numeric with Value {
   override def toString() = "Succ(" + t + ")"
+  override def getType() = FunctionType(TypeNat(), TypeNat())
 }
 
 case class If(t1: Term, t2: Term, t3: Term) extends Term {
   override def toString() = "If(" + t1 + "," + t2 + "," + t3 + ")" 
+  override def getType() = FunctionType(TypeBool(), t2.getType())
 }
 case object False extends Term {
   override def toString() = "false"
+  override def getType() = TypeBool()
 }
 case object Zero extends Term {
   override def toString() = "0"
+  override def getType() = TypeNat()
 }
 case class Variable(x: String) extends Term {
   override def toString() = x
@@ -52,6 +57,7 @@ case class Application(t1: Term, t2: Term) extends Term {
 
 case class Group(t: Term) extends Term {
   override def toString() = "(" + t + ")"
+  override def getType() = t.getType()
 }
 
 case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
@@ -64,10 +70,12 @@ case class Pair(t1: Term,t2: Term) extends Term {
 
 case class First(t: Term) extends Term {
   override def toString() = "fst" + t 
+  override def getType() = t.getType()
 }
 
 case class Second(t: Term) extends Term {
   override def toString() = "snd" + t 
+  override def getType() = t.getType()
 }
   //   ... To complete ... 
 /** Abstract Syntax Trees for types. */

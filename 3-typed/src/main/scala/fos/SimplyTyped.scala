@@ -102,9 +102,11 @@ object SimplyTyped extends StandardTokenParsers {
           FunctionType(t1, t2)
         }
       }
+      | "(" ~> Type <~ ")" ^^{
+        case t1 => t1.getType()
+      }
       |failure("illegal start of type"))
 
-  //   ... To complete ... 
   def parseApplication(e2: List[Term]) : Term = e2.reverse match{
     case h1 :: Nil => {
       h1
@@ -150,13 +152,21 @@ object SimplyTyped extends StandardTokenParsers {
 
   /** Is the given term a numeric value? */
   def isNumericVal(t: Term): Boolean = t match {
-  //   ... To complete ... 
+    case Zero => true
+    case Pred(e1) => isNumericVal(e1)
+    case Succ(e1) => isNumericVal(e1)
     case _ => false
   }
 
   /** Is the given term a value? */
-  def isValue(t: Term): Boolean = t match {
-  //   ... To complete ... 
+  def isValue(t: Term): Boolean = isNumericVal(t) match {
+    case true => true
+    case false => t match {
+      case True => true
+      case False => true
+      case Abstraction(e1,e2,e3) => true
+      case _ => false
+    }
     case _ => false
   }
 
