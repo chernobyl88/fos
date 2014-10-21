@@ -171,6 +171,9 @@ case class Second(t: Term) extends Term {
   override def getType() = checkInnerFunction(t.getType, t.getType.finalType());
 }
   //   ... To complete ... 
+
+trait errorType
+
 /** Abstract Syntax Trees for types. */
 abstract class Type extends Term {
   def sameType(t1: Type) : Boolean
@@ -204,18 +207,6 @@ case class TypeNat extends Type {
   override def finalType() : Type = this
 }
 
-case class ErrorType(t1: Type, t2: Type) extends Type {
-  override def toString() = "Error on type: Expected [" + t2 + "] and was [" + t1 + "]"
-  override def sameType(t1: Type): Boolean = false
-  override def finalType() : Type = this  
-}
-
-case class AlreadyAssigned(t1: Type, t2: Type) extends Type {
-  override def toString() = "Type for var already deffined: Was [" + t1 + "] and try to assign [" + t2 + "]"
-  override def sameType(t1: Type): Boolean = false
-  override def finalType() : Type = this  
-}
-
 case class FunctionType(t1: Type, t2:Type) extends Type {
   override def toString() = t1 + "->"+ t2
   override def sameType(t: Type): Boolean = {
@@ -226,4 +217,16 @@ case class FunctionType(t1: Type, t2:Type) extends Type {
     checkFull(t) || t2.sameType(t) || t.sameType(this)
   }
   override def finalType() = t2.finalType()
+}
+
+case class ErrorType(t1: Type, t2: Type) extends Type with errorType{
+  override def toString() = "Error on type: Expected [" + t2 + "] and was [" + t1 + "]"
+  override def sameType(t1: Type): Boolean = false
+  override def finalType() : Type = this  
+}
+
+case class AlreadyAssigned(t1: Type, t2: Type) extends Type with errorType{
+  override def toString() = "Type for var already deffined: Was [" + t1 + "] and try to assign [" + t2 + "]"
+  override def sameType(t1: Type): Boolean = false
+  override def finalType() : Type = this  
 }
