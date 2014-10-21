@@ -234,6 +234,18 @@ case class FunctionType(t1: Type, t2:Type) extends Type {
   override def getType() = this
 }
 
+case class PairType(t1: Type, t2: Type) extends Type {
+  override def toString() = t1 + " * " + t2
+  override def sameType(t: Type): Boolean = {
+    t match {
+      case PairType(a1, a2) => t1.sameType(a1) && t2.sameType(a2)
+      case _ => false
+    }
+  }
+  override def finalType() = PairType(t1.finalType, t2.finalType)
+  override def getType() = this
+}
+
 case class ErrorType(t1: Type, t2: Type) extends Type with TypeError{
   override def toString() = "Error on type: Expected [" + t2 + "] and was [" + t1 + "]"
   override def sameType(t1: Type): Boolean = false
