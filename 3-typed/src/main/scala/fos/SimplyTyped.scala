@@ -151,10 +151,8 @@ object SimplyTyped extends StandardTokenParsers {
   type Context = List[(String, Type)]
 
   /** Is the given term a numeric value? */
-  def isNumericVal(t: Term): Boolean = t match {
-    case Zero => true
-    case Pred(e1) => isNumericVal(e1)
-    case Succ(e1) => isNumericVal(e1)
+  def isNumericVal(t: Term): Boolean = t.getType.finalType match {
+    case TypeNat() => true
     case _ => false
   }
 
@@ -183,11 +181,7 @@ object SimplyTyped extends StandardTokenParsers {
    *  @param t   the given term
    *  @return    the computed type
    */
-  def typeof(ctx: Context, t: Term): Type = t match {
-    case True | False =>
-      TypeBool
-  //   ... To complete ... 
-  }
+  def typeof(ctx: Context, t: Term): Type = t.getType
 
   /** Returns a stream of terms, each being one step of reduction.
    *
