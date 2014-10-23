@@ -178,6 +178,13 @@ case class Abstraction(x: String,T:Type, t: Term) extends Term {
         true
       }
   }
+  override def eval() = {
+    var temp = t.eval
+    if (t.toString == temp.toString)
+      this
+    else
+      Abstraction(x, T, temp)
+  } 
 }
 
 case class Application(t1: Term, t2: Term) extends Term {
