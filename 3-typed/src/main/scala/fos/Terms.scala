@@ -16,6 +16,8 @@ abstract class Term extends Positional {
   }
   def getType() : Type
   def setType(x: String, T: Type): Boolean = true
+  def eval(): Term 
+  def fullEval(): Term
 }
 
 case object True extends Term with Value {
@@ -182,6 +184,14 @@ case class Second(t: Term) extends Term {
       case PairType(_, e) => FunctionType(t.getType, e.getType)
       case e => PairExpected(e)
     }
+  }
+  override def eval() = t match{
+    case PairType(_, e) => e.eval()
+    case _ => Second(t.eval())
+  }
+  override def fullEval() = t match {
+    case PairType(_,e) => e.fullEval()
+    case _ => Second(t.fullEval())
   }
 }
 
