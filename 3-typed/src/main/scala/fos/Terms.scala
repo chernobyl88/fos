@@ -35,6 +35,13 @@ case class IsZero(t: Term) extends Term  {
     }
   }
   override def setType(x: String, T: Type) = t.setType(x, T)
+  override def eval() = {
+    t match {
+      case Zero => True
+      case e:Succ => if (e.getIsNum) False else IsZero(e.eval)
+      case _ => IsZero(t.eval)
+    }
+  }
 }
 
 case class Pred(t: Term) extends Term {
@@ -48,11 +55,18 @@ case class Pred(t: Term) extends Term {
   }
   override def setType(x: String, T: Type) = t.setType(x, T)
   def eval() = {
-    t match {
-      case Succ(e) => e
-      case Zero => Zero
-      case _ => Pred(t.eval())
-    }
+    
+    var temp = t.eval
+    if (temp.toString == t.toString) {
+	    t match {
+	      case Succ(e) => {
+	        e
+	      }
+	      case Zero => Zero
+	      case _ => Pred(temp)
+	    }
+    } else
+      Pred(temp)
   }
   def fullEval() = {
     t match {
@@ -72,12 +86,25 @@ case class Succ(t: Term) extends Term {
     }
   }
   override def setType(x: String, T: Type) = t.setType(x, T)
+  def getIsNum(): Boolean = {
+    def inner(e: Term): Boolean = {
+	    e match {
+	      case Succ(Zero) => true
+	      case Succ(i:Succ) => i.getIsNum
+	      case _ => false
+	    }
+    }
+    
+    inner(t)
+  }
+  override def eval() = Succ(t.eval)
 }
+/*
 case class NumericSucc(t: Term) extends Term with Numeric with Value {
   override def toString() = "Succ(" + t + ")"
   override def getType() = checkInnerFunction(t.getType, TypeNat())
   override def setType(x: String, T: Type) = t.setType(x, T)
-}
+}*/
 
 case class If(t1: Term, t2: Term, t3: Term) extends Term {
   override def toString() = "If(" + t1 + "," + t2 + "," + t3 + ")"
@@ -93,6 +120,13 @@ case class If(t1: Term, t2: Term, t3: Term) extends Term {
     }
   }
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T) && t3.setType(x, T)
+  def eval() = {
+    t1 match {
+      case True => t2
+      case False => t3
+      case _ => If(t1.eval, t2, t3)
+    }
+  }
 }
 case object False extends Term with Value{
   override def toString() = "false"
