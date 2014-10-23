@@ -218,6 +218,17 @@ case class Application(t1: Term, t2: Term) extends Term {
     else
       ErrorType(t1.getType, t2.getType)
   }
+  def checkTerm(): Term = {
+    var temp = t2.eval
+    if (t2.toString == temp.toString()) {
+      temp = t1.eval
+      if (t1.toString == temp.toString())
+        this
+      else
+        Application(temp, t2)
+    }else
+       Application(t1, temp)
+  }
   override def eval() = checkInner(t2) match {
     case e:Value => checkInner(t2) match {
       case Abstraction(x,ty,t3) =>{
@@ -226,15 +237,9 @@ case class Application(t1: Term, t2: Term) extends Term {
         }
         else throw new Exception // TODO
       }
-      case _ => Application( t1.eval(),e)
+      case _ => checkTerm
     }
-    case _ => {
-	        var s1 = t1.eval()
-	        if (s1.toString() == t1.toString()){
-	          Application(s1, t2.eval())
-	        }
-	        else Application(s1,t2)
-	      }
+    case _ => checkTerm
   }
 }
 
