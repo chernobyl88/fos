@@ -18,6 +18,28 @@ abstract class Term extends Positional {
   def setType(x: String, T: Type): Boolean = true
   def eval(): Term = this
   def fullEval(): Term = this
+  def checkInner(t: Term): Term = t match {
+    case Group(t1) => checkInner(t1)
+    case _ => t
+  }
+   def subst(t: Term, x: String, s: Term): Term = t match {
+    case Variable(e1) => {
+      if (e1 == x) {
+        s
+      } else {
+        t
+      }
+    }
+    case Abstraction(e1,ty, t1) => {
+      if(x==e1){
+        Abstraction(e1,ty,t1)
+      } else {
+        Abstraction(e1,ty, subst(t1, x, s))
+      }
+    }
+    case Application(t1, t2) => Application(subst(t1, x, s), subst(t2, x, s))
+    case Group(t1) => Group(subst(t1, x, s))
+  }
 }
 
 case object True extends Term with Value {
@@ -154,6 +176,24 @@ case class Application(t1: Term, t2: Term) extends Term {
       t1.getType // TODO Est-ce qu'il faudrait une pair? {t1.getType, t2.getType}
     else
       ErrorType(t1.getType, t2.getType)
+  }
+  override def eval() = checkInner(t2) match {
+    case e:Value => checkInner(t2) match {
+      case Abstraction(x,ty,t3) =>{
+        if(e.getType().sameType(ty)){
+          subst(t3,x,e)
+        }
+        else throw new Exception // TODO
+      }
+      case _ => Application( t1.eval(),e)
+    }
+    case _ => {
+	        var s1 = t1.eval()
+	        if (s1.toString() == t1.toString()){
+	          Application(s1, t2.eval())
+	        }
+	        else Application(s1,t2)
+	      }
   }
 }
 
@@ -304,3 +344,4 @@ case class PairExpected(t: Type) extends Type with TypeError{
   override def toString() = "pair type expected but " + t + " found"
   override def sameType(t1: Type): Boolean = false
 }
+
