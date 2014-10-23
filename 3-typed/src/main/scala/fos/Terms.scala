@@ -158,6 +158,13 @@ case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
     else
       ErrorType(t1.getType, t2.getType)
   }
+  override def eval() = {
+    if(Abstraction(x,T,t2).eval() == Abstraction(x,T,t2)){
+      Application(Abstraction(x,T,t2),t1).eval()
+    } else {
+      Application(Abstraction(x,T,t2).eval(),t1)
+    }
+  }
 }
 
 case class Pair(t1: Term,t2: Term) extends Term {
