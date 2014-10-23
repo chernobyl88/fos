@@ -164,6 +164,14 @@ case class Pair(t1: Term,t2: Term) extends Term {
   override def toString() = "{" + t1+","+t2 + "}"
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = PairType(t1.getType, t2.getType)
+  override def eval() = {
+    if(t1.eval() == t1){
+      Pair(t1,t2.eval())
+    } else {
+      Pair(t1.eval(),t2)
+    }
+  }
+  override def fullEval() = Pair(t1.fullEval(),t2.fullEval())
 }
 
 case class First(t: Term) extends Term {
