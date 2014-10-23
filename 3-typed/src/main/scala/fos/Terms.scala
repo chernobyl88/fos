@@ -16,6 +16,8 @@ abstract class Term extends Positional {
   }
   def getType() : Type
   def setType(x: String, T: Type): Boolean = true
+  def eval(): Term = this
+  def fullEval(): Term = this
 }
 
 case object True extends Term with Value {
@@ -45,6 +47,20 @@ case class Pred(t: Term) extends Term {
     }
   }
   override def setType(x: String, T: Type) = t.setType(x, T)
+  def eval() = {
+    t match {
+      case Succ(e) => e
+      case Zero => Zero
+      case _ => Pred(t.eval())
+    }
+  }
+  def fullEval() = {
+    t match {
+      case Succ(e) => e.fullEval
+      case Zero => Zero
+      case _ => Pred(t.fullEval())
+    }
+  }
 }
 case class Succ(t: Term) extends Term {
   override def toString() = "Succ(" + t + ")"
@@ -190,7 +206,7 @@ trait TypeError
 /** Abstract Syntax Trees for types. */
 abstract class Type extends Term {
   def sameType(t1: Type) : Boolean
-  def finalType() : Type
+  def finalType() : Type = this
 }
 
 case class TypeBool extends Type {
@@ -199,8 +215,6 @@ case class TypeBool extends Type {
     case TypeBool() => true
     case _ => false
   }
-  override def finalType() : Type = this
-  override def getType() = this
 }
 
 case class NoTypeAssigned extends Type {
@@ -209,8 +223,6 @@ case class NoTypeAssigned extends Type {
     case NoTypeAssigned() => true
     case _ => false
   }
-  override def finalType() : Type = this
-  override def getType() = this
 }
 
 case class TypeNat extends Type {
@@ -219,8 +231,6 @@ case class TypeNat extends Type {
     case TypeNat() => true
     case _ => false
   }
-  override def finalType() : Type = this
-  override def getType() = this
 }
 
 case class FunctionType(t1: Type, t2:Type) extends Type {
@@ -233,7 +243,6 @@ case class FunctionType(t1: Type, t2:Type) extends Type {
     checkFull(t) || t2.sameType(t) || t.sameType(this)
   }
   override def finalType() = t2.finalType()
-  override def getType() = this
 }
 
 case class PairType(t1: Type, t2: Type) extends Type {
@@ -245,26 +254,19 @@ case class PairType(t1: Type, t2: Type) extends Type {
     }
   }
   override def finalType() = PairType(t1.finalType, t2.finalType)
-  override def getType() = this
 }
 
 case class ErrorType(t1: Type, t2: Type) extends Type with TypeError{
   override def toString() = "Error on type: Expected [" + t2 + "] and was [" + t1 + "]"
   override def sameType(t1: Type): Boolean = false
-  override def finalType() : Type = this  
-  override def getType() = this
 }
 
 case class AlreadyAssigned(t1: Type, t2: Type) extends Type with TypeError{
   override def toString() = "Type for var already deffined: Was [" + t1 + "] and try to assign [" + t2 + "]"
   override def sameType(t1: Type): Boolean = false
-  override def finalType() : Type = this  
-  override def getType() = this
 }
 
 case class PairExpected(t: Type) extends Type with TypeError{
   override def toString() = "pair type expected but " + t + " found"
   override def sameType(t1: Type): Boolean = false
-  override def finalType() : Type = this  
-  override def getType() = this
 }
