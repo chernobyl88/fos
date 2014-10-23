@@ -70,7 +70,7 @@ object SimplyTyped extends StandardTokenParsers {
 		}
 	}
 	| "(" ~> Term <~ ")" ^^ { case e1 => {
-			Group(e1)
+			e1
 		}
 	}
 	| ("let" ~> ident) ~ (":" ~> Type) ~ ("=" ~> Term) ~ ("in" ~> Term)^^ { case str ~ t1 ~ e1 ~ e2 => {
