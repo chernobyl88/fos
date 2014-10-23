@@ -174,6 +174,14 @@ case class First(t: Term) extends Term {
       case PairType(e, _) => FunctionType(t.getType, e.getType)
       case e => PairExpected(e)
     }
+  override def eval() = t match{
+    case PairType(e, _) => e.eval()
+    case _ => First(t.eval())
+  }
+  override def fullEval() = t match {
+    case PairType(e,_) => e.fullEval()
+    case _ => First(t.fullEval())
+  }
 }
 
 case class Second(t: Term) extends Term {
