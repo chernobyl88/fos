@@ -178,6 +178,14 @@ case class Pair(t1: Term,t2: Term) extends Term {
   override def toString() = "{" + t1+","+t2 + "}"
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = PairType(t1.getType, t2.getType)
+  override def eval() = {
+    if(t1.eval() == t1){
+      Pair(t1,t2.eval())
+    } else {
+      Pair(t1.eval(),t2)
+    }
+  }
+  override def fullEval() = Pair(t1.fullEval(),t2.fullEval())
 }
 
 case class First(t: Term) extends Term {
@@ -188,6 +196,14 @@ case class First(t: Term) extends Term {
       case PairType(e, _) => FunctionType(t.getType, e.getType)
       case e => PairExpected(e)
     }
+  override def eval() = t match{
+    case PairType(e, _) => e.eval()
+    case _ => First(t.eval())
+  }
+  override def fullEval() = t match {
+    case PairType(e,_) => e.fullEval()
+    case _ => First(t.fullEval())
+  }
 }
 
 case class Second(t: Term) extends Term {
@@ -198,6 +214,14 @@ case class Second(t: Term) extends Term {
       case PairType(_, e) => FunctionType(t.getType, e.getType)
       case e => PairExpected(e)
     }
+  }
+  override def eval() = t match{
+    case PairType(_, e) => e.eval()
+    case _ => Second(t.eval())
+  }
+  override def fullEval() = t match {
+    case PairType(_,e) => e.fullEval()
+    case _ => Second(t.fullEval())
   }
 }
 

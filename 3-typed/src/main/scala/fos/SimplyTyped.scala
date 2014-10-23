@@ -167,12 +167,72 @@ object SimplyTyped extends StandardTokenParsers {
     }
     case _ => false
   }
+  
+  def checkInner(t: Term): Term = t match {
+    case Group(t1) => checkInner(t1)
+    case _ => t
+  }
 
   /** Call by value reducer. */
-  def reduce(t: Term): Term = t match {
-  //   ... To complete ... 
-    case _ =>
-      throw NoRuleApplies(t)
+  def reduce(t: Term): Term = {
+    def inner(t: Term): Term = t match {
+	    case Application(t1, t2) => {
+	      checkInner(t2) match {
+		      case a1: Abstraction =>  {
+		        checkInner(t2) match {
+		          case a2: Abstraction => {
+			        checkInner(t1) match {
+					      case Abstraction(e1, t4) => {
+					        if (alpha(a1) contains e1) {
+					        	subst(t4, e1, subst(a1, e1, Variable(e1+"1")))
+					        } else {
+					        	subst(t4, e1, a1) 
+					        }
+					      }
+					      case _ => {
+					        Application(inner(t1), inner(t2))
+					      }
+				      }
+
+		          }
+		          case _ => Application(t1, inner(t2))
+		        }
+		      }
+		      case _ => {
+	        var s1 = inner(t1)
+	        if (s1.toString() == t1.toString()){
+	          Application(s1, inner(t2))
+	        }
+	        else Application(s1,t2)
+	      }
+	      }
+	    }
+	    case First(t) => checkInner(t) match {
+	      case Pair(t1,t2) => inner(t1)
+	      case e => PairExpected(e.getType())
+	    }
+	    case Second(t) => checkInner(t) match {
+	      case Pair(t1,t2) => inner(t2)
+	      case e => PairExpected(e.getType())
+	    }
+	    case Let(x,ty,t1,t2) => Application(Abstraction(x,ty,t2),t1)
+	    case Abstraction(e1,ty, t1) => Abstraction(e1,ty, inner(t1))
+	    case Group(t1) => checkInner(inner(t1)) match {
+	      case e: Variable => e
+	      case t2 => Group(t2)
+	    }
+	    case _ => {
+	      t
+	    }
+	  }
+    
+    var temp = inner(t);
+    
+    if (temp.toString() == t.toString()) {
+      throw NoRuleApplies(t);
+    } else {
+      temp
+    }
   }
 
   /** Returns the type of the given term <code>t</code>.
