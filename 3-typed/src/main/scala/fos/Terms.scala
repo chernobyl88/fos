@@ -17,7 +17,13 @@ abstract class Term extends Positional {
   def getType() : Type
   def setType(x: String, T: Type): Boolean = true
   def eval(): Term = this
-  def fullEval(): Term = this
+  def fullEval(): Term = {
+    var temp = this.eval
+    if (this.toString() == temp.toString())
+      this
+    else
+      temp.fullEval
+  }
   def checkInner(t: Term): Term = t match {
     case Group(t1) => checkInner(t1)
     case _ => t
@@ -79,11 +85,11 @@ case class Pred(t: Term) extends Term {
   }
   override def subst(t1: Term, x: String, s: Term) = Pred(t.subst(t1,x,s))
   override def setType(x: String, T: Type) = t.setType(x, T)
-  def eval() = {
+  override def eval() = {
     
     var temp = t.eval
     if (temp.toString == t.toString) {
-	    t match {
+	    checkInner(t) match {
 	      case Succ(e) => {
 	        e
 	      }
@@ -199,7 +205,7 @@ case class Variable(x: String) extends Term with Value {
 case class Abstraction(x: String,T:Type, t: Term) extends Term {
   var Ti = T
   t.setType(x, T)
-  override def toString() = "\\" + x +":"+Ti+"." + t 
+  override def toString() = "\\" + x +":"+Ti+". (" + t + ")" 
   override def getType() = Ti
   override def setType(x1: String, T1: Type): Boolean = {
     if (x1 != x)
@@ -222,7 +228,7 @@ case class Abstraction(x: String,T:Type, t: Term) extends Term {
 }
 
 case class Application(t1: Term, t2: Term) extends Term {
-  override def toString() = t1 + " " + t2
+  override def toString() = "(" + t1 + ") (" + t2 + ")"
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = {
     if (t1.getType.sameType(t2.getType))
@@ -256,7 +262,7 @@ case class Application(t1: Term, t2: Term) extends Term {
 }
 
 case class Group(t: Term) extends Term {
-  override def toString() = "(" + t + ")"
+  override def toString() = t.toString
   override def setType(x: String, T: Type) = t.setType(x, T);
   override def getType() = t.getType()
   override def eval() = checkInner(t).eval()
@@ -376,6 +382,8 @@ case class PairType(t1: Type, t2: Type) extends Type {
   }
   override def finalType() = PairType(t1.finalType, t2.finalType)
 }
+
+//Transform into Exception
 
 case class ErrorType(t1: Type, t2: Type) extends Type with TypeError{
   override def toString() = "Error on type: Expected [" + t2 + "] and was [" + t1 + "]"

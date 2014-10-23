@@ -135,7 +135,7 @@ object SimplyTyped extends StandardTokenParsers {
     if (num <= 0) {
       Zero
     } else {
-      NumericSucc(decomposeNum(num - 1))
+      Succ(decomposeNum(num - 1))
     }
   }
   /** Thrown when no reduction rule applies to the given term. */
