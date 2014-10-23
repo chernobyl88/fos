@@ -22,7 +22,8 @@ abstract class Term extends Positional {
     case Group(t1) => checkInner(t1)
     case _ => t
   }
-   def subst(t: Term, x: String, s: Term): Term = t match {
+   def subst(t: Term, x: String, s: Term): Term
+   = t match {
     case Variable(e1) => {
       if (e1 == x) {
         s
@@ -56,6 +57,7 @@ case class IsZero(t: Term) extends Term  {
       ErrorType(t.getType, TypeNat())
     }
   }
+  override def subst(t1: Term, x: String, s: Term) = IsZero(t.subst(t1,x,s))
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def eval() = {
     t match {
@@ -75,6 +77,7 @@ case class Pred(t: Term) extends Term {
       ErrorType(t.getType, TypeNat())
     }
   }
+  override def subst(t1: Term, x: String, s: Term) = Pred(t.subst(t1,x,s))
   override def setType(x: String, T: Type) = t.setType(x, T)
   def eval() = {
     
@@ -107,6 +110,7 @@ case class Succ(t: Term) extends Term {
       ErrorType(t.getType, TypeNat())
     }
   }
+  override def subst(t1: Term, x: String, s: Term) = Succ(t1.subst(t,x,s))
   override def setType(x: String, T: Type) = t.setType(x, T)
   def getIsNum(): Boolean = {
     def inner(e: Term): Boolean = {
@@ -141,6 +145,7 @@ case class If(t1: Term, t2: Term, t3: Term) extends Term {
       }
     }
   }
+  override def subst(t: Term, x: String, s: Term) = If(t1.subst(t,x,s),t2.subst(t,x,s),t3.subst(t,x,s))
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T) && t3.setType(x, T)
   def eval() = {
     t1 match {
@@ -161,6 +166,13 @@ case object Zero extends Term with Value{
 case class Variable(x: String) extends Term with Value {
   var cType: Type = null;
   override def toString() = x
+  override def subst(t: Term, x1: String, s: Term): Term= {
+      if (x1 == x) {
+        s
+      } else {
+        t
+      }
+    }
   override def setType(x1:String, T: Type) : Boolean = {
     if (x1 == x) {
 	    this.getType match {
@@ -247,8 +259,7 @@ case class Group(t: Term) extends Term {
   override def toString() = "(" + t + ")"
   override def setType(x: String, T: Type) = t.setType(x, T);
   override def getType() = t.getType()
-  override def eval() = t.eval()
-  override def fullEval() = t.fullEval()
+  override def eval() = checkInner(t).eval()
 }
 
 case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
@@ -267,7 +278,6 @@ case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
       Application(Abstraction(x,T,t2).eval(),t1)
     }
   }
-  override def fullEval() = Application(Abstraction(x,T,t2).fullEval(),t1).fullEval()
 }
 
 case class Pair(t1: Term,t2: Term) extends Term {
@@ -281,7 +291,6 @@ case class Pair(t1: Term,t2: Term) extends Term {
       Pair(t1.eval(),t2)
     }
   }
-  override def fullEval() = Pair(t1.fullEval(),t2.fullEval())
 }
 
 case class First(t: Term) extends Term {
@@ -292,13 +301,9 @@ case class First(t: Term) extends Term {
       case PairType(e, _) => FunctionType(t.getType, e.getType)
       case e => PairExpected(e)
     }
-  override def eval() = t match{
+  override def eval() = checkInner(t) match{
     case PairType(e, _) => e.eval()
     case _ => First(t.eval())
-  }
-  override def fullEval() = t match {
-    case PairType(e,_) => e.fullEval()
-    case _ => First(t.fullEval())
   }
 }
 
@@ -311,13 +316,9 @@ case class Second(t: Term) extends Term {
       case e => PairExpected(e)
     }
   }
-  override def eval() = t match{
+  override def eval() = checkInner(t) match{
     case PairType(_, e) => e.eval()
     case _ => Second(t.eval())
-  }
-  override def fullEval() = t match {
-    case PairType(_,e) => e.fullEval()
-    case _ => Second(t.fullEval())
   }
 }
 
