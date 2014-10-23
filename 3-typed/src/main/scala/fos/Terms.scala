@@ -161,6 +161,8 @@ case class Group(t: Term) extends Term {
   override def toString() = "(" + t + ")"
   override def setType(x: String, T: Type) = t.setType(x, T);
   override def getType() = t.getType()
+  override def eval() = t.eval()
+  override def fullEval() = t.fullEval()
 }
 
 case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
