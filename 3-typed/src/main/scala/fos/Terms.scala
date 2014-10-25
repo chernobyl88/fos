@@ -19,39 +19,24 @@ abstract class Term extends Positional {
   def eval(): Term = this
   def fullEval(): Term = {
     var temp = this.eval
-    if (this.toString() == temp.toString())
+    if (this equals temp)
       this
     else
       temp.fullEval
   }
-  def checkInner(t: Term): Term = t match {
-    case Group(t1) => checkInner(t1)
-    case _ => t
-  }
-   def subst(t: Term, x: String, s: Term): Term
-   = t match {
-    case Variable(e1) => {
-      if (e1 == x) {
-        s
-      } else {
-        t
-      }
-    }
-    case Abstraction(e1,ty, t1) => {
-      if(x==e1){
-        Abstraction(e1,ty,t1)
-      } else {
-        Abstraction(e1,ty, subst(t1, x, s))
-      }
-    }
-    case Application(t1, t2) => Application(subst(t1, x, s), subst(t2, x, s))
-    case Group(t1) => Group(subst(t1, x, s))
-  }
+   def subst(x: String, s: Term): Term = this
+   
+  def alpha(): FV = new FV(Nil)
+  def equals(t1: Term) : Boolean
 }
 
 case object True extends Term with Value {
   override def toString() = "true"
   override def getType() = TypeBool()
+  override def equals(t1: Term): Boolean = t1 match {
+    case True => true
+    case _ => false
+  }
 }
 
 case class IsZero(t: Term) extends Term  {
@@ -60,10 +45,11 @@ case class IsZero(t: Term) extends Term  {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(t.getType(), TypeBool())
     } else {
-      ErrorType(t.getType, TypeNat())
+      throw new Exception("parameter type mismatch: expected Nat, found " + t.getType)
     }
+     
   }
-  override def subst(t1: Term, x: String, s: Term) = IsZero(t.subst(t1,x,s))
+  override def subst(x: String, s: Term) = IsZero(t.subst(x,s))
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def eval() = {
     t match {
@@ -71,6 +57,11 @@ case class IsZero(t: Term) extends Term  {
       case e:Succ => if (e.getIsNum) False else IsZero(e.eval)
       case _ => IsZero(t.eval)
     }
+  }
+  override def alpha(): FV = t.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case IsZero(e) => e equals t
+    case _ => false
   }
 }
 
@@ -80,16 +71,15 @@ case class Pred(t: Term) extends Term {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(t.getType(), TypeNat())
     } else {
-      ErrorType(t.getType, TypeNat())
+      throw new Exception("parameter type mismatch: expected Nat, found " + t.getType)
     }
   }
-  override def subst(t1: Term, x: String, s: Term) = Pred(t.subst(t1,x,s))
+  override def subst(x: String, s: Term) = Pred(t.subst(x,s))
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def eval() = {
-    
     var temp = t.eval
-    if (temp.toString == t.toString) {
-	    checkInner(t) match {
+    if (temp equals t) {
+	    t match {
 	      case Succ(e) => {
 	        e
 	      }
@@ -99,12 +89,10 @@ case class Pred(t: Term) extends Term {
     } else
       Pred(temp)
   }
-  def fullEval() = {
-    t match {
-      case Succ(e) => e.fullEval
-      case Zero => Zero
-      case _ => Pred(t.fullEval())
-    }
+  override def alpha(): FV = t.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case Pred(e) => e equals t
+    case _ => false
   }
 }
 case class Succ(t: Term) extends Term {
@@ -113,10 +101,10 @@ case class Succ(t: Term) extends Term {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(t.getType(), TypeNat())
     } else {
-      ErrorType(t.getType, TypeNat())
+      throw new Exception("parameter type mismatch: expected Nat, found " + t.getType)
     }
   }
-  override def subst(t1: Term, x: String, s: Term) = Succ(t1.subst(t,x,s))
+  override def subst(x: String, s: Term) = Succ(t.subst(x,s))
   override def setType(x: String, T: Type) = t.setType(x, T)
   def getIsNum(): Boolean = {
     def inner(e: Term): Boolean = {
@@ -130,13 +118,12 @@ case class Succ(t: Term) extends Term {
     inner(t)
   }
   override def eval() = Succ(t.eval)
+  override def alpha(): FV = t.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case Succ(e) => e equals t
+    case _ => false
+  }
 }
-/*
-case class NumericSucc(t: Term) extends Term with Numeric with Value {
-  override def toString() = "Succ(" + t + ")"
-  override def getType() = checkInnerFunction(t.getType, TypeNat())
-  override def setType(x: String, T: Type) = t.setType(x, T)
-}*/
 
 case class If(t1: Term, t2: Term, t3: Term) extends Term {
   override def toString() = "If(" + t1 + "," + t2 + "," + t3 + ")"
@@ -145,52 +132,59 @@ case class If(t1: Term, t2: Term, t3: Term) extends Term {
       FunctionType(t1.getType, t1.getType)
     } else {
       if (t1.getType.sameType(TypeBool())) {
-    	  ErrorType(t2.getType, t3.getType)
+      throw new Exception("parameter type mismatch: expected " + t2.getType + ", found " + t3.getType)
       } else {
-        ErrorType(t1.getType, TypeBool())
+      throw new Exception("parameter type mismatch: expected Bool, found " + t1.getType)
       }
     }
   }
-  override def subst(t: Term, x: String, s: Term) = If(t1.subst(t,x,s),t2.subst(t,x,s),t3.subst(t,x,s))
+  override def subst(x: String, s: Term) = If(t1.subst(x,s),t2.subst(x,s),t3.subst(x,s))
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T) && t3.setType(x, T)
-  def eval() = {
+  override def eval() = {
     t1 match {
       case True => t2
       case False => t3
       case _ => If(t1.eval, t2, t3)
     }
   }
+  override def alpha(): FV = t1.alpha union t2.alpha union t3.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case If(e1, e2, e3) => (e1 equals t1) && (e2 equals t2) && (e3 equals t3)
+    case _ => false
+  }
 }
+
 case object False extends Term with Value{
   override def toString() = "false"
   override def getType() = TypeBool()
+  override def equals(t1: Term): Boolean = t1 match {
+    case False => true
+    case _ => false
+  }
 }
+
 case object Zero extends Term with Value{
   override def toString() = "0"
   override def getType() = TypeNat()
+  override def equals(t1: Term): Boolean = t1 match {
+    case Zero => true
+    case _ => false
+  }
 }
+
 case class Variable(x: String) extends Term with Value {
   var cType: Type = null;
   override def toString() = x
-  override def subst(t: Term, x1: String, s: Term): Term= {
+  override def subst(x1: String, s: Term): Term= {
       if (x1 == x) {
         s
       } else {
-        t
+        this
       }
     }
   override def setType(x1:String, T: Type) : Boolean = {
     if (x1 == x) {
-	    this.getType match {
-	      case NoTypeAssigned() => cType = T
-	      case e:AlreadyAssigned => cType = AlreadyAssigned(cType, T)
-	      case _ => {
-	        if ((T.sameType(cType)) == false) {
-	          cType = AlreadyAssigned(cType, T)
-	          false
-	        }
-	      } 
-	    }
+      cType = T
       
     }
     true
@@ -201,7 +195,14 @@ case class Variable(x: String) extends Term with Value {
       case a:Type => a.getType()
     }
   }
+  override def alpha(): FV = new FV(List(this))
+  
+  override def equals(t1: Term): Boolean = t1 match {
+    case Variable(e) => e == x
+    case _ => false
+  }
 }
+
 case class Abstraction(x: String,T:Type, t: Term) extends Term {
   var Ti = T
   t.setType(x, T)
@@ -211,20 +212,32 @@ case class Abstraction(x: String,T:Type, t: Term) extends Term {
     if (x1 != x)
     	t.setType(x1, T1)
     else
-      if (Ti.getType.sameType(T1) == false) {
-        Ti = AlreadyAssigned(T, T1)
-        false
-      } else {
-        true
-      }
+    	true
   }
   override def eval() = {
     var temp = t.eval
-    if (t.toString == temp.toString)
+    if (t equals temp)
       this
     else
       Abstraction(x, T, temp)
-  } 
+  }
+  override def subst(e1: String, s: Term): Term = {
+      if(x==e1){
+        Abstraction(x, T, t.subst(x, s))
+      } else{
+	      if (s.alpha contains x) {
+	        Abstraction(x+"1", T, t.subst(x, Variable(x+"1"))).subst(x, s)
+	      } else {
+	        Abstraction(x, T, t.subst(e1, s))
+	      }
+      }
+    }
+  override def alpha(): FV = t.alpha remove x
+  
+  override def equals(t1: Term): Boolean = t1 match {
+    case Abstraction(x1, T, t1) => (x1 == x) && (t equals t1)
+    case _ => false
+  }
 }
 
 case class Application(t1: Term, t2: Term) extends Term {
@@ -232,40 +245,40 @@ case class Application(t1: Term, t2: Term) extends Term {
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = {
     if (t1.getType.sameType(t2.getType))
-      t1.getType // TODO Est-ce qu'il faudrait une pair? {t1.getType, t2.getType}
+      t1.getType
     else
-      ErrorType(t1.getType, t2.getType)
+      throw new Exception("parameter type mismatch: expected " + t1.getType + ", found " + t2.getType)
   }
   def checkTerm(): Term = {
     var temp = t2.eval
-    if (t2.toString == temp.toString()) {
+    if (t2 equals temp) {
       temp = t1.eval
-      if (t1.toString == temp.toString())
+      if (t1 equals temp)
         this
       else
         Application(temp, t2)
     }else
        Application(t1, temp)
   }
-  override def eval() = checkInner(t2) match {
-    case e:Value => checkInner(t2) match {
+  override def eval() = t2 match {
+    case e:Value => t2 match {
       case Abstraction(x,ty,t3) =>{
         if(e.getType().sameType(ty)){
-          subst(t3,x,e)
+          t3.subst(x,e)
+        } else {
+        	throw new Exception("parameter type mismatch: expected " + e.getType + ", found " + ty.getType)
         }
-        else throw new Exception // TODO
       }
       case _ => checkTerm
     }
     case _ => checkTerm
   }
-}
-
-case class Group(t: Term) extends Term {
-  override def toString() = t.toString
-  override def setType(x: String, T: Type) = t.setType(x, T);
-  override def getType() = t.getType()
-  override def eval() = checkInner(t).eval()
+  override def subst(x: String, s: Term): Term = Application(t1.subst(x, s), t2.subst(x, s))
+  override def alpha(): FV = t1.alpha union t2.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case Application(e1, e2) => (e1 equals t1) && (e2 equals t2) 
+    case _ => false
+  }
 }
 
 case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
@@ -275,7 +288,7 @@ case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
     if (t1.getType.sameType(t2.getType))
       FunctionType(t1.getType, t2.getType)
     else
-      ErrorType(t1.getType, t2.getType)
+      throw new Exception("parameter type mismatch: expected " + t1.getType + ", found " + t2.getType)
   }
   override def eval() = {
     if(Abstraction(x,T,t2).eval() == Abstraction(x,T,t2)){
@@ -283,6 +296,22 @@ case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
     } else {
       Application(Abstraction(x,T,t2).eval(),t1)
     }
+  }
+  override def subst(e1: String, s: Term): Term = {
+      if(x==e1){
+        Let(x, T, t1.subst(x, s), t2.subst(x, s))
+      } else{
+	      if (s.alpha contains x) {
+	        Let(x+"1", T, t1.subst(x, Variable(x+"1")), t2.subst(x, Variable(x+"1"))).subst(x, s)
+	      } else {
+	        Let(x, T, t1.subst(e1, s), t2.subst(e1, s))
+	      }
+      }
+    }
+  override def alpha(): FV = t2.alpha remove x
+  override def equals(t1: Term): Boolean = t1 match {
+    case Let(x1, T, e1, e2) => (x == x) && (e1 equals t1) && (e2 equals t2)
+    case _ => false
   }
 }
 
@@ -297,6 +326,13 @@ case class Pair(t1: Term,t2: Term) extends Term {
       Pair(t1.eval(),t2)
     }
   }
+  
+  override def subst(e1: String, s: Term): Term = Pair(t1.subst(e1, s), t2.subst(e1, s))
+  override def alpha(): FV = t1.alpha union t2.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case Pair(e1, e2) => (e1 equals t1) && (e2 equals t2)
+    case _ => false
+  }
 }
 
 case class First(t: Term) extends Term {
@@ -305,11 +341,17 @@ case class First(t: Term) extends Term {
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def getType() = t.getType match {
       case PairType(e, _) => FunctionType(t.getType, e.getType)
-      case e => PairExpected(e)
+      case e => throw new Exception("pair type expected but " + t.getType + " found")
     }
-  override def eval() = checkInner(t) match{
+  override def eval() = t match{
     case PairType(e, _) => e.eval()
     case _ => First(t.eval())
+  }
+  override def subst(e1: String, s: Term): Term = First(t.subst(e1, s))
+  override def alpha(): FV = t.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case First(e) => e equals t
+    case _ => false
   }
 }
 
@@ -319,12 +361,18 @@ case class Second(t: Term) extends Term {
   override def getType() = {
     t.getType match {
       case PairType(_, e) => FunctionType(t.getType, e.getType)
-      case e => PairExpected(e)
+      case e => throw new Exception("pair type expected but " + t.getType + " found")
     }
   }
-  override def eval() = checkInner(t) match{
+  override def eval() = t match{
     case PairType(_, e) => e.eval()
     case _ => Second(t.eval())
+  }
+  override def subst(e1: String, s: Term): Term = Second(t.subst(e1, s))
+  override def alpha(): FV = t.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case Second(e) => e equals t
+    case _ => false
   }
 }
 
@@ -334,6 +382,8 @@ trait TypeError
 abstract class Type extends Term {
   def sameType(t1: Type) : Boolean
   def finalType() : Type = this
+  override def equals(t1: Term): Boolean = false
+  override def getType(): Type = this
 }
 
 case class TypeBool extends Type {
@@ -384,7 +434,7 @@ case class PairType(t1: Type, t2: Type) extends Type {
 }
 
 //Transform into Exception
-
+/*
 case class ErrorType(t1: Type, t2: Type) extends Type with TypeError{
   override def toString() = "Error on type: Expected [" + t2 + "] and was [" + t1 + "]"
   override def sameType(t1: Type): Boolean = false
@@ -398,5 +448,44 @@ case class AlreadyAssigned(t1: Type, t2: Type) extends Type with TypeError{
 case class PairExpected(t: Type) extends Type with TypeError{
   override def toString() = "pair type expected but " + t + " found"
   override def sameType(t1: Type): Boolean = false
-}
+}*/
 
+class FV(t: List[Variable]) {
+  
+  override def toString() = {
+    def recur(t: List[Variable]) : String = t match {
+      case e1 :: e2 :: elem => e1.toString + ", " + recur(e2 :: elem)
+      case e1 :: Nil => e1.toString + "]"
+      case Nil => "]"
+    }
+    
+    "[" + recur(t)
+  }
+  
+  def contains(x: String): Boolean = {
+    t.exists(p => p.x == x)
+  }
+  
+  def remove(s: String): FV = {
+    new FV(t.filter(x => !(x.toString() eq s)))
+  }
+  
+  def t() : List[Variable] = t
+  
+  def union(t1: FV): FV = {
+    def recUnion(t1: List[Variable], t2: List[Variable], ret: List[Variable]): List[Variable] = {
+      t1 match {
+        case e1 :: l => {
+          t2.exists(p => e1.x == p.x) match {
+            case true => recUnion(l, t2, ret)
+            case false => recUnion(l, t2, e1 :: ret)
+          }
+        }
+        case _ => {
+          t2 ::: ret
+        }
+      }
+    }
+    new FV(recUnion(t, t1.t, List()))
+  }
+}
