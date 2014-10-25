@@ -22,113 +22,60 @@ object SimplyTyped extends StandardTokenParsers {
 	}
     | failure("illegal start of term"))
 
-  /** SimpleTerm ::= "true"
-   *               | "false"
-   *               | number
-   *               | "succ" Term
-   *               | "pred" Term
-   *               | "iszero" Term
-   *               | "if" Term "then" Term "else" Term
-   *               | ident
-   *               | "\" ident ":" Type "." Term
-   *               | "(" Term ")"
-   *               | "let" ident ":" Type "=" Term "in" Term
-   *               | "{" Term "," Term "}"
-   *               | "fst" Term
-   *               | "snd" Term
-   */
   def SimpleTerm: Parser[Term] = positioned(
       "true"          ^^^ True
     | "false"         ^^^ False
-    | "0" ^^^ Zero
-      | "if" ~ Term ~ "then" ~ Term ~ "else" ~ Term ^^ {case "if" ~ e1 ~ "then" ~ e2 ~ "else" ~ e3 => {
-    	  If(e1, e2, e3)
-      	}
+    | "0" ^^^ {
+        println("test")
+        Zero
       }
-      | "succ" ~> Term ^^ { case e1 => {
-    	  Succ(e1)
-      	}
-      }
-      | "pred" ~> Term ^^ { case e1 => {
-    	  Pred(e1)
-      	}
-      }
-      | "iszero" ~> Term ^^ { case e1 => {
-    	  IsZero(e1)
-      	}
-      }
-      | numericLit ^^ {case num => {
-    	  decomposeNum(num.toInt)
-      	}
-      }
-    |ident ^^ {case str => {
-			Variable(str)
-		}
-	}
-	| ("\\" ~> ident) ~ (":" ~> Type) ~ ("." ~> Term) ^^ { case str ~ t1 ~ e1 => {
-			Abstraction(str,t1, e1)
-		}
-	}
-	| "(" ~> Term <~ ")" ^^ { case e1 => {
-			e1
-		}
-	}
-	| ("let" ~> ident) ~ (":" ~> Type) ~ ("=" ~> Term) ~ ("in" ~> Term)^^ { case str ~ t1 ~ e1 ~ e2 => {
-			Let(str,t1, e1,e2)
-		}
-	}
-	| "{" ~> Term ~","~ Term <~ "}" ^^ { case e1 ~","~ e2 => {
-			Pair(e1,e2)
-		}
-	}
-	| "fst" ~> Term ^^ { case e1 => {
-			First(e1)
-		}
-	}
-	| "snd" ~> Term ^^ { case e1 => {
-			Second(e1)
-		}
-	}
+    | "if" ~ Term ~ "then" ~ Term ~ "else" ~ Term ^^ {case "if" ~ e1 ~ "then" ~ e2 ~ "else" ~ e3 => If(e1, e2, e3)}
+    | "succ" ~> Term ^^ { case e1 => Succ(e1)}
+    | "pred" ~> Term ^^ { case e1 => Pred(e1)}
+    | "iszero" ~> Term ^^ { case e1 => IsZero(e1)}
+    | numericLit ^^ {case num => decomposeNum(num.toInt)}
+    | ident ^^ {case str => Variable(str)}
+	| ("\\" ~> ident) ~ (":" ~> Type) ~ ("." ~> Term) ^^ { case str ~ t1 ~ e1 => Abstraction(str,t1, e1)}
+	| "(" ~> Term <~ ")" ^^ { case e1 => e1}
+	| ("let" ~> ident) ~ (":" ~> Type) ~ ("=" ~> Term) ~ ("in" ~> Term)^^ { case str ~ t1 ~ e1 ~ e2 => Let(str,t1, e1,e2)}
+	| "{" ~> Term ~","~ Term <~ "}" ^^ { case e1 ~","~ e2 => Pair(e1,e2)}
+	| "fst" ~> Term ^^ { case e1 => First(e1)}
+	| "snd" ~> Term ^^ { case e1 => Second(e1)}
     | failure("illegal start of simple term"))
 
   /** Type       ::= SimpleType [ "->" Type ]
    */
   def Type: Parser[Type] = positioned(
-		  
+      simpleTyped ~ rep("->" ~ Type) ^^ {
+        case e1 ~ e2 => {
+          def inner(t: List[SimplyTyped.~[String,Type]]): List[Type] = t match {
+            case Nil => List()
+            case e1 :: Nil => List(e1._2)
+            case e1 :: e2 => e1._2 :: inner(e2)
+          }
+          parseType(e1 :: inner(e2))
+		}
+      }
+      | failure("illegal start of type"))
+      
+   def simpleTyped: Parser[Type] = positioned(
       "Bool" ^^^ TypeBool()
       | "Nat" ^^^ TypeNat()
-      | Type ~ "->" ~ Type ^^{
-        case t1 ~ "->" ~ t2 =>{
-          FunctionType(t1, t2)
-        }
-      }
       | "(" ~> Type <~ ")" ^^{
         case t1 => t1.getType()
       }
-      |failure("illegal start of type"))
+      | failure("illegal start of type"))
 
   def parseApplication(e2: List[Term]) : Term = e2.reverse match{
-    case h1 :: Nil => {
-      h1
-    }
-    case h1 :: t1 => {
-    	Application(parseApplication(t1.reverse), h1)
-    }
-    case Nil => {
-      throw NoRuleApplies(null)
-    }
+    case h1 :: Nil => h1
+    case h1 :: t1 => Application(parseApplication(t1.reverse), h1)
+    case Nil => throw NoRuleApplies(null)
   }
   
-  def parseType(e2: List[Type]) : Type = e2 match{
-    case h1 :: Nil => {
-      h1
-    }
-    case h1 :: t1 => {
-    	FunctionType(h1, parseType(t1))
-    }
-    case Nil => {
-      throw NoRuleApplies(null)
-    }
+  def parseType(e1: List[Type]) : Type = e1 match{
+    case h1 :: Nil => h1
+    case h1 :: t1 => FunctionType(h1, parseType(t1))
+    case Nil => throw NoRuleApplies(null)
   }
     
    def decomposeNum(num: Int) : Term = {
@@ -159,6 +106,7 @@ object SimplyTyped extends StandardTokenParsers {
 
   /** Call by value reducer. */
   def reduce(t: Term): Term = {
+	
     var temp = t.eval();
     
     if (temp equals t) {
@@ -192,10 +140,14 @@ object SimplyTyped extends StandardTokenParsers {
     }
 
   def main(args: Array[String]): Unit = {
-    val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+    val input = "(\\x:Nat->Bool. (\\y:Nat.(x y))) (\\x:Nat.(iszero x)) 0"
+    val tokens = new lexical.Scanner(input)
+    
+    //val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>
         try {
+          println(trees)
           println("typed: " + typeof(Nil, trees))
           for (t <- path(trees, reduce))
             println(t)

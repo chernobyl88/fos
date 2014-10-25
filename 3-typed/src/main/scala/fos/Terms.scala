@@ -129,7 +129,7 @@ case class If(t1: Term, t2: Term, t3: Term) extends Term {
   override def toString() = "If(" + t1 + "," + t2 + "," + t3 + ")"
   override def getType = {
     if (t1.getType.sameType(TypeBool()) && t2.getType.sameType(t3.getType)) {
-      FunctionType(t1.getType, t1.getType)
+      FunctionType(t1.getType, t2.getType)
     } else {
       if (t1.getType.sameType(TypeBool())) {
       throw new Exception("parameter type mismatch: expected " + t2.getType + ", found " + t3.getType)
@@ -344,7 +344,7 @@ case class First(t: Term) extends Term {
       case e => throw new Exception("pair type expected but " + t.getType + " found")
     }
   override def eval() = t match{
-    case PairType(e, _) => e.eval()
+    case Pair(e, _) => e
     case _ => First(t.eval())
   }
   override def subst(e1: String, s: Term): Term = First(t.subst(e1, s))
@@ -365,7 +365,7 @@ case class Second(t: Term) extends Term {
     }
   }
   override def eval() = t match{
-    case PairType(_, e) => e.eval()
+    case Pair(_, e) => e.eval()
     case _ => Second(t.eval())
   }
   override def subst(e1: String, s: Term): Term = Second(t.subst(e1, s))
@@ -390,6 +390,7 @@ case class TypeBool extends Type {
   override def toString() = "Bool"
   override def sameType(t1: Type): Boolean = t1 match {
     case TypeBool() => true
+    case e:FunctionType => e.sameType(this) 
     case _ => false
   }
 }
@@ -398,6 +399,7 @@ case class NoTypeAssigned extends Type {
   override def toString() = "No type assigned"
   override def sameType(t1: Type): Boolean = t1 match {
     case NoTypeAssigned() => true
+    case e:FunctionType => e.sameType(this) 
     case _ => false
   }
 }
@@ -406,6 +408,7 @@ case class TypeNat extends Type {
   override def toString() = "Nat"
   override def sameType(t1: Type): Boolean = t1 match {
     case TypeNat() => true
+    case e:FunctionType => e.sameType(this) 
     case _ => false
   }
 }
@@ -417,7 +420,7 @@ case class FunctionType(t1: Type, t2:Type) extends Type {
       	case FunctionType(a1, a2) => t1.sameType(a1) && t2.sameType(a2)
     	case _ => false
     }
-    checkFull(t) || t2.sameType(t) || t.sameType(this)
+    checkFull(t) || t2.sameType(t) || t.sameType(t2)
   }
   override def finalType() = t2.finalType()
 }
@@ -427,6 +430,7 @@ case class PairType(t1: Type, t2: Type) extends Type {
   override def sameType(t: Type): Boolean = {
     t match {
       case PairType(a1, a2) => t1.sameType(a1) && t2.sameType(a2)
+      case e:FunctionType => e.sameType(this) 
       case _ => false
     }
   }
