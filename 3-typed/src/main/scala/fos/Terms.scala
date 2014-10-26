@@ -261,9 +261,13 @@ case class Application(t1: Term, t2: Term) extends Term {
        Application(t1, temp)
   }
   override def eval() = t2 match {
-    case e:Value => t2 match {
-      case Abstraction(x,ty,t3) =>{
-        if(e.getType().sameType(ty)){
+    case e:Value => t1 match {
+      case Abstraction(x,ty,t3) => {
+        var typ= t2 match{
+        	case Abstraction(x2,ty2,t4) => t4.getType()
+        	case _ => e.getType()
+          }
+        if(typ.sameType(ty)){
           t3.subst(x,e)
         } else {
         	throw new Exception("parameter type mismatch: expected " + e.getType + ", found " + ty.getType)
