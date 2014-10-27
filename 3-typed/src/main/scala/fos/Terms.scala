@@ -40,7 +40,7 @@ case object True extends Term with Value {
 }
 
 case class IsZero(t: Term) extends Term  {
-  override def toString() = "IsZero(" + t + ")"
+  override def toString() = "IsZero " + t
   override def getType() = {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(TypeNat(), TypeBool())
@@ -206,7 +206,7 @@ case class Variable(x: String) extends Term with Value {
 case class Abstraction(x: String,T:Type, t: Term) extends Term with Value{
   var Ti = T
   t.setType(x, T)
-  override def toString() = "\\" + x +":"+Ti+". (" + t + ")" 
+  override def toString() = "\\" + x +":"+Ti+". " + t 
   override def getType() = Ti
   override def setType(x1: String, T1: Type): Boolean = {
     if (x1 != x)
@@ -241,7 +241,10 @@ case class Abstraction(x: String,T:Type, t: Term) extends Term with Value{
 }
 
 case class Application(t1: Term, t2: Term) extends Term {
-  override def toString() = "(" + t1 + ") (" + t2 + ")"
+  override def toString() = t2 match{
+    case e:Value => "(" + t1 + ") " + t2
+    case _ => "(" + t1 + ") (" + t2 + ")"
+  } 
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = {
     var typ1 = t1.getType() match{
