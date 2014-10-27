@@ -66,7 +66,7 @@ case class IsZero(t: Term) extends Term  {
 }
 
 case class Pred(t: Term) extends Term {
-  override def toString() = "Pred(" + t + ")"
+  override def toString() = "Pred " + t
   override def getType() = {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(t.getType(), TypeNat())
@@ -96,7 +96,7 @@ case class Pred(t: Term) extends Term {
   }
 }
 case class Succ(t: Term) extends Term {
-  override def toString() = "Succ(" + t + ")"
+  override def toString() = "Succ " + t
   override def getType = {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(t.getType(), TypeNat())
@@ -241,9 +241,16 @@ case class Abstraction(x: String,T:Type, t: Term) extends Term with Value{
 }
 
 case class Application(t1: Term, t2: Term) extends Term {
-  override def toString() = t2 match{
-    case e:Value => "(" + t1 + ") " + t2
-    case _ => "(" + t1 + ") (" + t2 + ")"
+  override def toString() ={
+    var str1 = t1 match {
+      case e:Value => t1 + " "
+      case _ => "(" + t1 + ") "
+    }
+    var str2 = t2 match {
+      case e:Value => t2
+      case _ => "(" + t2 + ")"
+    }
+    str1 + str2
   } 
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = {
