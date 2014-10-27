@@ -19,7 +19,7 @@ abstract class Term extends Positional {
   def eval(): Term = this
   def fullEval(): Term = {
     var temp = this.eval
-    if (this equals temp)
+    if (this == temp)
       this
     else
       temp.fullEval
@@ -43,7 +43,7 @@ case class IsZero(t: Term) extends Term  {
   override def toString() = "IsZero(" + t + ")"
   override def getType() = {
     if (t.getType.sameType(TypeNat())) {
-      checkInnerFunction(t.getType(), TypeBool())
+      checkInnerFunction(TypeNat(), TypeBool())
     } else {
       throw new Exception("parameter type mismatch: expected Nat, found " + t.getType)
     }
@@ -244,7 +244,27 @@ case class Application(t1: Term, t2: Term) extends Term {
   override def toString() = "(" + t1 + ") (" + t2 + ")"
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = {
-    if (t1.getType.sameType(t2.getType))
+    System.out.println("Checking " + t1 + " and " + t2)
+    var typ1 = t1.getType() match{
+    	case FunctionType(a1,a2) => t2 match{
+    	  case Abstraction(_,_,_) => FunctionType(a1,a2)
+    	  case _ => a1
+    	}
+    	case _ => t1.getType()
+    }
+    System.out.println("term 1: " + t1 + " is a " + typ1)   
+    var typ2 = t2 match{
+    	case Abstraction(x2,ty2,a2) => {
+    	  System.out.println("term 2: " + t2 + " is an Abstraction of type "+ a2.getType())
+    	  a2.getType()
+    	}
+    	case _ => {
+    	  var temp = t2.getType()
+    	  System.out.println("term 2: " + t2 + " is an " + temp)
+    	  temp
+    	}
+    }
+    if (typ1.sameType(typ2))
       t1.getType
     else
       throw new Exception("parameter type mismatch: expected " + t1.getType + ", found " + t2.getType)
@@ -261,9 +281,13 @@ case class Application(t1: Term, t2: Term) extends Term {
        Application(t1, temp)
   }
   override def eval() = t2 match {
-    case e:Value => t2 match {
-      case Abstraction(x,ty,t3) =>{
-        if(e.getType().sameType(ty)){
+    case e:Value => t1 match {
+      case Abstraction(x,ty,t3) => {
+        var typ= t2 match{
+        	case Abstraction(x2,ty2,t4) => t4.getType()
+        	case _ => e.getType()
+          }
+        if(typ.sameType(ty)){
           t3.subst(x,e)
         } else {
         	throw new Exception("parameter type mismatch: expected " + e.getType + ", found " + ty.getType)
@@ -390,7 +414,7 @@ case class TypeBool extends Type {
   override def toString() = "Bool"
   override def sameType(t1: Type): Boolean = t1 match {
     case TypeBool() => true
-    case e:FunctionType => e.sameType(this) 
+ //   case e:FunctionType => e.sameType(this) 
     case _ => false
   }
 }
@@ -399,7 +423,7 @@ case class NoTypeAssigned extends Type {
   override def toString() = "No type assigned"
   override def sameType(t1: Type): Boolean = t1 match {
     case NoTypeAssigned() => true
-    case e:FunctionType => e.sameType(this) 
+ //   case e:FunctionType => e.sameType(this) 
     case _ => false
   }
 }
@@ -408,19 +432,20 @@ case class TypeNat extends Type {
   override def toString() = "Nat"
   override def sameType(t1: Type): Boolean = t1 match {
     case TypeNat() => true
-    case e:FunctionType => e.sameType(this) 
+  //  case e:FunctionType => e.sameType(this) 
     case _ => false
   }
 }
 
 case class FunctionType(t1: Type, t2:Type) extends Type {
   override def toString() = t1 + "->"+ t2
+  override def getType(): Type = FunctionType(t1.getType(),t2.getType())
   override def sameType(t: Type): Boolean = {
     def checkFull(t: Type):Boolean = t match {
       	case FunctionType(a1, a2) => t1.sameType(a1) && t2.sameType(a2)
     	case _ => false
     }
-    checkFull(t) || t2.sameType(t) || t.sameType(t2)
+    checkFull(t) // || t2.sameType(t) || t.sameType(t2)
   }
   override def finalType() = t2.finalType()
 }
@@ -430,7 +455,7 @@ case class PairType(t1: Type, t2: Type) extends Type {
   override def sameType(t: Type): Boolean = {
     t match {
       case PairType(a1, a2) => t1.sameType(a1) && t2.sameType(a2)
-      case e:FunctionType => e.sameType(this) 
+//      case e:FunctionType => e.sameType(this) 
       case _ => false
     }
   }
