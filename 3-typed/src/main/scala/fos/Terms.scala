@@ -40,7 +40,7 @@ case object True extends Term with Value {
 }
 
 case class IsZero(t: Term) extends Term  {
-  override def toString() = "IsZero " + t
+  override def toString() = "IsZero (" + t + ")"
   override def getType() = {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(TypeNat(), TypeBool())
@@ -66,7 +66,7 @@ case class IsZero(t: Term) extends Term  {
 }
 
 case class Pred(t: Term) extends Term {
-  override def toString() = "Pred " + t
+  override def toString() = "Pred (" + t + ")"
   override def getType() = {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(t.getType(), TypeNat())
@@ -96,7 +96,7 @@ case class Pred(t: Term) extends Term {
   }
 }
 case class Succ(t: Term) extends Term {
-  override def toString() = "Succ " + t
+  override def toString() = "Succ (" + t + ")"
   override def getType = {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(t.getType(), TypeNat())
@@ -206,7 +206,7 @@ case class Variable(x: String) extends Term with Value {
 case class Abstraction(x: String,T:Type, t: Term) extends Term with Value{
   var Ti = T
   t.setType(x, T)
-  override def toString() = "\\" + x +":"+Ti+". " + t 
+  override def toString() = "\\" + x +":"+Ti+". (" + t + ")" 
   override def getType() = Ti
   override def setType(x1: String, T1: Type): Boolean = {
     if (x1 != x)
@@ -312,7 +312,7 @@ case class Application(t1: Term, t2: Term) extends Term {
 }
 
 case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
-  override def toString() = "let "+x+":"+T+"="+t1+" in " + t2
+  override def toString() = "let "+x+":"+T+"=("+t1+") in (" + t2 + ")"
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = {
     if (t1.getType.sameType(t2.getType))
@@ -346,7 +346,7 @@ case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
 }
 
 case class Pair(t1: Term,t2: Term) extends Term {
-  override def toString() = "{" + t1+","+t2 + "}"
+  override def toString() = "{" + t1+", "+t2 + "}"
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = PairType(t1.getType, t2.getType)
   override def eval() = {
@@ -366,7 +366,7 @@ case class Pair(t1: Term,t2: Term) extends Term {
 }
 
 case class First(t: Term) extends Term {
-  override def toString() = "fst" + t 
+  override def toString() = "fst"+t 
 
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def getType() = t.getType match {

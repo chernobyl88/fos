@@ -139,7 +139,7 @@ object SimplyTyped extends StandardTokenParsers {
 
   def main(args: Array[String]): Unit = {
     var input = "(\\x:Nat->Bool. (\\y:Nat.(x y))) (\\x:Nat.(iszero x)) 0"
-      input = " a b c d e f g h i j"
+   //   input = " a b c d e f g h i j"
     val tokens = new lexical.Scanner(input)
     
     //val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
