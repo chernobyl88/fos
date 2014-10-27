@@ -106,10 +106,8 @@ object SimplyTyped extends StandardTokenParsers {
 
   /** Call by value reducer. */
   def reduce(t: Term): Term = {
-	
     var temp = t.eval();
-    
-    if (temp equals t) {
+    if (temp == t) {
       throw NoRuleApplies(t);
     } else {
       temp
@@ -122,7 +120,7 @@ object SimplyTyped extends StandardTokenParsers {
    *  @param t   the given term
    *  @return    the computed type
    */
-  def typeof(ctx: Context, t: Term): Type = t.getType
+  def typeof(ctx: Context, t: Term): Type = t.fullEval.getType
 
   /** Returns a stream of terms, each being one step of reduction.
    *
@@ -140,7 +138,8 @@ object SimplyTyped extends StandardTokenParsers {
     }
 
   def main(args: Array[String]): Unit = {
-    val input = "(\\x:Nat->Bool. (\\y:Nat.(x y))) (\\x:Nat.(iszero x)) 0"
+    var input = "(\\x:Nat->Bool. (\\y:Nat.(x y))) (\\x:Nat.(iszero x)) 0"
+      input = "(\\x:Nat.x) true";
     val tokens = new lexical.Scanner(input)
     
     //val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
