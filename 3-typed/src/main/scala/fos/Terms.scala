@@ -244,13 +244,25 @@ case class Application(t1: Term, t2: Term) extends Term {
   override def toString() = "(" + t1 + ") (" + t2 + ")"
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = {
-    var typ1 = t1 match{
-    	case Application(a1,a2) => Application(a1.fullEval(),a2.fullEval()).getType()
+    System.out.println("Checking " + t1 + " and " + t2)
+    var typ1 = t1.getType() match{
+    	case FunctionType(a1,a2) => t2 match{
+    	  case Abstraction(_,_,_) => FunctionType(a1,a2)
+    	  case _ => a1
+    	}
     	case _ => t1.getType()
     }
+    System.out.println("term 1: " + t1 + " is a " + typ1)   
     var typ2 = t2 match{
-    	case Abstraction(x2,ty2,a2) => a2.getType()
-    	case _ => t2.getType()
+    	case Abstraction(x2,ty2,a2) => {
+    	  System.out.println("term 2: " + t2 + " is an Abstraction of type "+ a2.getType())
+    	  a2.getType()
+    	}
+    	case _ => {
+    	  var temp = t2.getType()
+    	  System.out.println("term 2: " + t2 + " is an " + temp)
+    	  temp
+    	}
     }
     if (typ1.sameType(typ2))
       t1.getType
