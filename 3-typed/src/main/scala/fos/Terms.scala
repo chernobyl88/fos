@@ -216,7 +216,7 @@ case class Abstraction(x: String,T:Type, t: Term) extends Term with Value{
   }
   override def eval() = {
     var temp = t.eval
-    if (t equals temp)
+    if (t == temp)
       this
     else
       Abstraction(x, T, temp)
@@ -350,17 +350,18 @@ case class Pair(t1: Term,t2: Term) extends Term {
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T)
   override def getType() = PairType(t1.getType, t2.getType)
   override def eval() = {
-    if(t1.eval() == t1){
+    var temp = t1.eval
+    if(temp == t1){
       Pair(t1,t2.eval())
     } else {
-      Pair(t1.eval(),t2)
+      Pair(temp,t2)
     }
   }
   
   override def subst(e1: String, s: Term): Term = Pair(t1.subst(e1, s), t2.subst(e1, s))
   override def alpha(): FV = t1.alpha union t2.alpha
   override def equals(t1: Term): Boolean = t1 match {
-    case Pair(e1, e2) => (e1 equals t1) && (e2 equals t2)
+    case Pair(e1, e2) => (e1 == t1) && (e2 == t2)
     case _ => false
   }
 }
