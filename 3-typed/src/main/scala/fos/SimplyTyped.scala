@@ -25,10 +25,7 @@ object SimplyTyped extends StandardTokenParsers {
   def SimpleTerm: Parser[Term] = positioned(
       "true"          ^^^ True
     | "false"         ^^^ False
-    | "0" ^^^ {
-        println("test")
-        Zero
-      }
+    | "0" ^^^  Zero
     | "if" ~ Term ~ "then" ~ Term ~ "else" ~ Term ^^ {case "if" ~ e1 ~ "then" ~ e2 ~ "else" ~ e3 => If(e1, e2, e3)}
     | "succ" ~> Term ^^ { case e1 => Succ(e1)}
     | "pred" ~> Term ^^ { case e1 => Pred(e1)}
@@ -36,7 +33,9 @@ object SimplyTyped extends StandardTokenParsers {
     | numericLit ^^ {case num => decomposeNum(num.toInt)}
     | ident ^^ {case str => Variable(str)}
 	| ("\\" ~> ident) ~ (":" ~> Type) ~ ("." ~> Term) ^^ { case str ~ t1 ~ e1 => Abstraction(str,t1, e1)}
-	| "(" ~> Term <~ ")" ^^ { case e1 => e1}
+	| "(" ~> Term <~ ")" ^^ { case e1 =>{
+	  println("My group: " + e1)
+	 e1}}
 	| ("let" ~> ident) ~ (":" ~> Type) ~ ("=" ~> Term) ~ ("in" ~> Term)^^ { case str ~ t1 ~ e1 ~ e2 => Let(str,t1, e1,e2)}
 	| "{" ~> Term ~","~ Term <~ "}" ^^ { case e1 ~","~ e2 => Pair(e1,e2)}
 	| "fst" ~> Term ^^ { case e1 => First(e1)}
@@ -139,7 +138,7 @@ object SimplyTyped extends StandardTokenParsers {
 
   def main(args: Array[String]): Unit = {
     var input = "(\\x:Nat->Bool. (\\y:Nat.(x y))) (\\x:Nat.(iszero x)) 0"
-      input = " a b c d e f g h i j"
+      input = "(\\x:Nat->Bool. (\\y:Nat.(x y))) (\\x:Nat.(iszero x)) Pred 0"
     val tokens = new lexical.Scanner(input)
     
     //val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
