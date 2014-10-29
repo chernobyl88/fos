@@ -31,7 +31,7 @@ abstract class Term extends Positional {
 }
 
 case object True extends Term with Value {
-  override def toString() = "true"
+  override def toString() = "True"
   override def getType() = TypeBool()
   override def equals(t1: Term): Boolean = t1 match {
     case True => true
@@ -54,7 +54,7 @@ case class IsZero(t: Term) extends Term  {
   override def eval() = {
     t match {
       case Zero => True
-      case e:Succ => if (e.getIsNum) False else IsZero(e.eval)
+      case Succ(e) => False
       case _ => IsZero(t.eval)
     }
   }
@@ -95,12 +95,11 @@ case class Pred(t: Term) extends Term {
     case _ => false
   }
 }
-case class Succ(t: Term) extends Term {
+case class Succ(t: Term) extends Term with Value {
   override def toString() = "Succ (" + t + ")"
   override def getType = {
-    if (t.getType.sameType(TypeNat())) {
-      checkInnerFunction(t.getType(), TypeNat())
-    } else {
+    if (t.getType.sameType(TypeNat())) TypeNat()
+    else {
       throw new Exception("parameter type mismatch: expected Nat, found " + t.getType)
     }
   }
@@ -155,7 +154,7 @@ case class If(t1: Term, t2: Term, t3: Term) extends Term {
 }
 
 case object False extends Term with Value{
-  override def toString() = "false"
+  override def toString() = "False"
   override def getType() = TypeBool()
   override def equals(t1: Term): Boolean = t1 match {
     case False => true
