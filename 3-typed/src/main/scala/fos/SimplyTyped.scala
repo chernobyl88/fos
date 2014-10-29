@@ -28,7 +28,7 @@ object SimplyTyped extends StandardTokenParsers {
     | "0" ^^^  Zero
     | "if" ~ Term ~ "then" ~ Term ~ "else" ~ Term ^^ {case "if" ~ e1 ~ "then" ~ e2 ~ "else" ~ e3 => If(e1, e2, e3)}
     | "succ" ~> Term ^^ { case e1 => Succ(e1)}
-    | "pred" ~> Term ^^ { case e1 => Pred(e1)}
+    | "pred" ~> Term ^^ { case e1 => Pred(e1) }
     | "iszero" ~> Term ^^ { case e1 => IsZero(e1)}
     | numericLit ^^ {case num => decomposeNum(num.toInt)}
     | ident ^^ {case str => Variable(str)}
@@ -137,13 +137,7 @@ object SimplyTyped extends StandardTokenParsers {
     }
 
   def main(args: Array[String]): Unit = {
-    var input = "(\\x:Nat->Bool. (\\y:Nat.(x y))) (\\x:Nat.(iszero x)) 0"
-      input = "(\\x:Nat->Bool. (\\y:Nat.(x y))) (\\x:Nat.(iszero x)) Pred 0"
-      input = "((\\x:Nat->Bool. (\\y:Nat.(x y))) (\\x:Nat.(iszero x))) Pred(0)"
-      //input = " (b)c (d e (f))"
-    val tokens = new lexical.Scanner(input)
-    
-    //val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+    val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>
         try {
