@@ -468,6 +468,17 @@ case class PairType(t1: Type, t2: Type) extends Type {
   override def finalType() = PairType(t1.finalType, t2.finalType)
 }
 
+case class PlusType(t1: Type, t2: Type) extends Type {
+  override def toString() = t1 + " + " + t2
+  override def sameType(t: Type): Boolean = {
+    t match {
+      case PlusType(a1, a2) => t1.sameType(a1) && t2.sameType(a2)
+      case _ => false
+    }
+  }
+  override def finalType() = PlusType(t1.finalType, t2.finalType)
+}
+
 //Transform into Exception
 /*
 case class ErrorType(t1: Type, t2: Type) extends Type with TypeError{
@@ -551,6 +562,6 @@ case class Inr(t: Term, ty: Type) extends Term with Value {
   }
 }
 
-case class Case(t: Term, x1: Term,t1: Term,x2: Term,t2: Term) extends Term with Value {
+case class Case(t: Term, x1: Term,t1: Term,x2: Term,t2: Term) extends Term{
   override def toString() = "Case " + t + " of inl " + x1 + "=>" + t1 + " | inr " + x2 + "=>" + t2  
 }
