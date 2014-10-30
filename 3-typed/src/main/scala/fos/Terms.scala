@@ -550,3 +550,7 @@ case class Inr(t: Term, ty: Type) extends Term with Value {
     case _ => false
   }
 }
+
+case class Case(t: Term, x1: Term,t1: Term,x2: Term,t2: Term) extends Term with Value {
+  override def toString() = "Case " + t + " of inl " + x1 + "=>" + t1 + " | inr " + x2 + "=>" + t2  
+}
