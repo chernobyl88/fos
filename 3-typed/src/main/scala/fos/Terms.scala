@@ -524,3 +524,29 @@ class FV(t: List[Variable]) {
     new FV(recUnion(t, t1.t, List()))
   }
 }
+
+case class Inl(t: Term, ty: Type) extends Term with Value {
+  override def toString() = "Inl " + t + " as " + ty
+  override def getType = ty
+  override def subst(x: String, s: Term) = Inl(t.subst(x,s),ty)
+  override def setType(x: String, T: Type) = t.setType(x, T)
+  override def eval() = Inl(t.eval,ty)
+  override def alpha(): FV = t.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case Inl(e,ty2) => (e equals t) && ty2.sameType(ty)
+    case _ => false
+  }
+}
+
+case class Inr(t: Term, ty: Type) extends Term with Value {
+  override def toString() = "Inr " + t + " as " + ty
+  override def getType = ty
+  override def subst(x: String, s: Term) = Inr(t.subst(x,s),ty)
+  override def setType(x: String, T: Type) = t.setType(x, T)
+  override def eval() = Inr(t.eval,ty)
+  override def alpha(): FV = t.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case Inr(e,ty2) => (e equals t) && ty2.sameType(ty)
+    case _ => false
+  }
+}
