@@ -40,6 +40,9 @@ object SimplyTyped extends StandardTokenParsers {
 	| "{" ~> Term ~","~ Term <~ "}" ^^ { case e1 ~","~ e2 => Pair(e1,e2)}
 	| "fst" ~> Term ^^ { case e1 => First(e1)}
 	| "snd" ~> Term ^^ { case e1 => Second(e1)}
+	| "inl" ~ Term  ~ "as" ~ Type ^^{ case "inl" ~ e1  ~ "as" ~ t1 => Inl(e1,t1)}
+	| "inr" ~ Term  ~ "as" ~ Type ^^{ case "inl" ~ e1  ~ "as" ~ t1 => Inr(e1,t1)}
+	| "case" ~ Term ~ "of" ~ "inl" ~ Term ~ "=>" ~ Term  ~ "|" ~ "inr" ~ Term ~ "=>" ~ Term ^^{ case "case" ~ t ~ "of" ~ "inl" ~ x1 ~ "=>" ~ t1  ~ "|" ~ "inr" ~ x2 ~ "=>" ~ t2 =>Case(t,x1,t1,x2,t2)}
     | failure("illegal start of simple term"))
 
   /** Type       ::= SimpleType [ "->" Type ]

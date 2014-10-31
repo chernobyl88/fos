@@ -468,6 +468,17 @@ case class PairType(t1: Type, t2: Type) extends Type {
   override def finalType() = PairType(t1.finalType, t2.finalType)
 }
 
+case class PlusType(t1: Type, t2: Type) extends Type {
+  override def toString() = t1 + " + " + t2
+  override def sameType(t: Type): Boolean = {
+    t match {
+      case PlusType(a1, a2) => t1.sameType(a1) && t2.sameType(a2)
+      case _ => false
+    }
+  }
+  override def finalType() = PlusType(t1.finalType, t2.finalType)
+}
+
 //Transform into Exception
 /*
 case class ErrorType(t1: Type, t2: Type) extends Type with TypeError{
@@ -523,4 +534,34 @@ class FV(t: List[Variable]) {
     }
     new FV(recUnion(t, t1.t, List()))
   }
+}
+
+case class Inl(t: Term, ty: Type) extends Term with Value {
+  override def toString() = "Inl " + t + " as " + ty
+  override def getType = ty
+  override def subst(x: String, s: Term) = Inl(t.subst(x,s),ty)
+  override def setType(x: String, T: Type) = t.setType(x, T)
+  override def eval() = Inl(t.eval,ty)
+  override def alpha(): FV = t.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case Inl(e,ty2) => (e equals t) && ty2.sameType(ty)
+    case _ => false
+  }
+}
+
+case class Inr(t: Term, ty: Type) extends Term with Value {
+  override def toString() = "Inr " + t + " as " + ty
+  override def getType = ty
+  override def subst(x: String, s: Term) = Inr(t.subst(x,s),ty)
+  override def setType(x: String, T: Type) = t.setType(x, T)
+  override def eval() = Inr(t.eval,ty)
+  override def alpha(): FV = t.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case Inr(e,ty2) => (e equals t) && ty2.sameType(ty)
+    case _ => false
+  }
+}
+
+case class Case(t: Term, x1: Term,t1: Term,x2: Term,t2: Term) extends Term{
+  override def toString() = "Case " + t + " of inl " + x1 + "=>" + t1 + " | inr " + x2 + "=>" + t2  
 }
