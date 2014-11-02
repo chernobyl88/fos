@@ -42,7 +42,8 @@ object SimplyTyped extends StandardTokenParsers {
 	| "snd" ~> Term ^^ { case e1 => Second(e1)}
 	| "inl" ~ Term  ~ "as" ~ Type ^^{ case "inl" ~ e1  ~ "as" ~ t1 => Inl(e1,t1)}
 	| "inr" ~ Term  ~ "as" ~ Type ^^{ case "inl" ~ e1  ~ "as" ~ t1 => Inr(e1,t1)}
-	| "case" ~ Term ~ "of" ~ "inl" ~ Term ~ "=>" ~ Term  ~ "|" ~ "inr" ~ Term ~ "=>" ~ Term ^^{ case "case" ~ t ~ "of" ~ "inl" ~ x1 ~ "=>" ~ t1  ~ "|" ~ "inr" ~ x2 ~ "=>" ~ t2 =>Case(t,x1,t1,x2,t2)}
+	| "fix" ~ Term  ^^ { case "fix" ~ e1 => Fix(e1)}
+	| "case" ~ Term ~ "of" ~ "inl" ~ ident ~ "=>" ~ Term  ~ "|" ~ "inr" ~ ident ~ "=>" ~ Term ^^{ case "case" ~ t ~ "of" ~ "inl" ~ x1 ~ "=>" ~ t1  ~ "|" ~ "inr" ~ x2 ~ "=>" ~ t2 =>Case(t,Variable(x1),t1,Variable(x2),t2)}
     | failure("illegal start of simple term"))
 
   /** Type       ::= SimpleType [ "->" Type ]

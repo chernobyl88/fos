@@ -406,6 +406,92 @@ case class Second(t: Term) extends Term {
   }
 }
 
+case class Inl(t: Term, ty: Type) extends Term with Value {
+  val leftType = t.getType
+  val rightType = ty
+  override def toString() = "Inl " + t + " as " + ty
+  override def getType = new PlusType(ty, t.getType)
+  override def subst(x: String, s: Term) = Inl(t.subst(x,s),ty)
+  override def setType(x: String, T: Type) = t.setType(x, T)
+  override def eval() = Inl(t.eval,ty)
+  override def alpha(): FV = t.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case Inl(e,ty2) => (e equals t) && ty2.sameType(ty)
+    case _ => false
+  }
+}
+
+case class Inr(t: Term, ty: Type) extends Term with Value {
+  val leftType = ty
+  val rightType = t.getType
+  override def toString() = "Inr " + t + " as " + ty
+  override def getType = new PlusType(t.getType, ty)
+  override def subst(x: String, s: Term) = Inr(t.subst(x,s),ty)
+  override def setType(x: String, T: Type) = t.setType(x, T)
+  override def eval() = Inr(t.eval,ty)
+  override def alpha(): FV = t.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case Inr(e,ty2) => (e equals t) && ty2.sameType(ty)
+    case _ => false
+  }
+}
+
+case class Fix(t: Term) extends Term with Value {
+  override def toString() = "Fix " + t
+  override def getType = t.getType
+  override def subst(x: String, s: Term) = Fix(t.subst(x,s))
+  override def setType(x: String, T: Type) = t.setType(x, T)
+  override def eval() = t match {
+    case Abstraction(x, s, t) => t.subst(x, this)
+    case _ => Fix(t.eval)
+  }
+  override def alpha(): FV = t.alpha
+  override def equals(t1: Term): Boolean = t1 match {
+    case Fix(t1) => t1 == t
+    case _ => false
+  }
+}
+
+case class Case(t: Term, x1: Variable,t1: Term,x2: Variable,t2: Term) extends Term{
+  override def toString() = "Case " + t + " of inl " + x1 + "=>" + t1 + " | inr " + x2 + "=>" + t2
+  override def getType() = {
+    t match {
+      case e:Inr => {
+        if (t1.getType.sameType(e.leftType) && t2.getType.sameType(e.rightType))
+          t.getType
+        else
+          throw new Exception("parameter type mismatch: expected " + e.getType + ", found " + new PlusType(t1.getType, t2.getType))
+      }
+      case e:Inl => {
+        if (t1.getType.sameType(e.leftType) && t2.getType.sameType(e.rightType))
+          t.getType
+        else
+          throw new Exception("parameter type mismatch: expected " + e.getType + ", found " + new PlusType(t1.getType, t2.getType))
+      }
+      case _ => throw new Exception("parameter type mismatch: expected Inr or Inl, found " + t.getType)
+    }
+  }
+  override def subst(x: String, s: Term) = new Case(t.subst(x, s), x1, t1.subst(x, s), x2, t2.subst(x, s))
+  override def setType(x: String, T: Type) = t.setType(x, T) && x1.setType(x, T) && t1.setType(x, T) && x2.setType(x, T) && t2.setType(x, T)
+  override def eval() = {
+    val evalT = t.eval
+    if (evalT == t) {
+      t match {
+        case Inl(e, s) => t1.subst(x1.x, t)
+        case Inr(e, s) => t2.subst(x2.x, t)
+        case _ => throw new Exception("parameter type mismatch: expected Inr or Inl, found " + t.getType)
+      }
+    } else {
+     new Case(evalT, x1, t1, x2, t2) 
+    }
+  }
+  override def alpha() = t.alpha union x1.alpha union t1.alpha union x2.alpha union t2.alpha
+  override def equals(t1: Term) = t1 match {
+    case Case(e1, e2, e3, e4, e5) => (e1 == t) && (e2 == x1) && (e3 == t1) && (e4 == x2) && (e5 == t2)
+    case _ => false
+  }
+}
+
 trait TypeError
 
 /** Abstract Syntax Trees for types. */
@@ -534,34 +620,4 @@ class FV(t: List[Variable]) {
     }
     new FV(recUnion(t, t1.t, List()))
   }
-}
-
-case class Inl(t: Term, ty: Type) extends Term with Value {
-  override def toString() = "Inl " + t + " as " + ty
-  override def getType = ty
-  override def subst(x: String, s: Term) = Inl(t.subst(x,s),ty)
-  override def setType(x: String, T: Type) = t.setType(x, T)
-  override def eval() = Inl(t.eval,ty)
-  override def alpha(): FV = t.alpha
-  override def equals(t1: Term): Boolean = t1 match {
-    case Inl(e,ty2) => (e equals t) && ty2.sameType(ty)
-    case _ => false
-  }
-}
-
-case class Inr(t: Term, ty: Type) extends Term with Value {
-  override def toString() = "Inr " + t + " as " + ty
-  override def getType = ty
-  override def subst(x: String, s: Term) = Inr(t.subst(x,s),ty)
-  override def setType(x: String, T: Type) = t.setType(x, T)
-  override def eval() = Inr(t.eval,ty)
-  override def alpha(): FV = t.alpha
-  override def equals(t1: Term): Boolean = t1 match {
-    case Inr(e,ty2) => (e equals t) && ty2.sameType(ty)
-    case _ => false
-  }
-}
-
-case class Case(t: Term, x1: Term,t1: Term,x2: Term,t2: Term) extends Term{
-  override def toString() = "Case " + t + " of inl " + x1 + "=>" + t1 + " | inr " + x2 + "=>" + t2  
 }
