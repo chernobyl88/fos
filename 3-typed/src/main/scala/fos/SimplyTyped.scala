@@ -56,8 +56,17 @@ object SimplyTyped extends StandardTokenParsers {
             case e1 :: Nil => List(e1._2)
             case e1 :: e2 => e1._2 :: inner(e2)
           }
-          parseType(e1 :: inner(e2))
+          parseFuncType(e1 :: inner(e2))
 		}
+      }
+      | simpleTyped ~ rep ("+" ~ Type) ^^ { case e1 ~ e2 => {
+          def inner(t: List[SimplyTyped.~[String,Type]]): List[Type] = t match {
+            case Nil => List()
+            case e1 :: Nil => List(e1._2)
+            case e1 :: e2 => e1._2 :: inner(e2)
+          }
+          parsePlusType(e1 :: inner(e2))
+      	}
       }
       | failure("illegal start of type"))
       
@@ -75,9 +84,15 @@ object SimplyTyped extends StandardTokenParsers {
     case Nil => throw NoRuleApplies(null)
   }
   
-  def parseType(e1: List[Type]) : Type = e1 match{
+  def parseFuncType(e1: List[Type]) : Type = e1 match{
     case h1 :: Nil => h1
-    case h1 :: t1 => FunctionType(h1, parseType(t1))
+    case h1 :: t1 => FunctionType(h1, parseFuncType(t1))
+    case Nil => throw NoRuleApplies(null)
+  }
+  
+  def parsePlusType(e1: List[Type]) : Type = e1 match{
+    case h1 :: Nil => h1
+    case h1 :: t1 => PlusType(h1, parsePlusType(t1))
     case Nil => throw NoRuleApplies(null)
   }
     
