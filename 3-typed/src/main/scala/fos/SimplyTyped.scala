@@ -10,7 +10,7 @@ import scala.util.parsing.input._
 object SimplyTyped extends StandardTokenParsers {
   lexical.delimiters ++= List("(", ")", "\\", ".", ":", "=", "->", "{", "}", ",", "*")
   lexical.reserved   ++= List("Bool", "Nat", "true", "false", "if", "then", "else", "succ",
-                              "pred", "iszero", "let", "in", "fst", "snd")
+                              "pred", "iszero", "let", "in", "fst", "snd", "inl", "inr", "case", "fix", "letrec")
 
   /** Term     ::= SimpleTerm { SimpleTerm }
    */
@@ -156,7 +156,10 @@ object SimplyTyped extends StandardTokenParsers {
     }
 
   def main(args: Array[String]): Unit = {
-    val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+    var myData = "(fix (\\y: Nat->Bool. \\x:Nat. if iszero x then true else if iszero (pred x) then false else (y (pred(pred x))))) 7";
+     //var myData = "((\\y. y) \\y.y)";
+     val tokens = new lexical.Scanner(myData)
+   // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>
         try {
