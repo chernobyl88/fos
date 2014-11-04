@@ -221,14 +221,14 @@ case class Abstraction(x: String,T:Type, t: Term) extends Term with Value{
       Abstraction(x, T, temp)
   }
   override def subst(e1: String, s: Term): Term = {
-      if(x==e1){
-        Abstraction(x, T, t.subst(x, s))
-      } else{
+      if(! (x == e1)){
 	      if (s.alpha contains x) {
 	        Abstraction(x+"1", T, t.subst(x, Variable(x+"1"))).subst(x, s)
 	      } else {
 	        Abstraction(x, T, t.subst(e1, s))
 	      }
+      } else {
+        this
       }
     }
   override def alpha(): FV = t.alpha remove x
@@ -442,7 +442,7 @@ case class Fix(t: Term) extends Term with Value {
   override def subst(x: String, s: Term) = Fix(t.subst(x,s))
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def eval() = t match {
-    case Abstraction(x, s, t) => t.subst(x, Fix(t))
+    case Abstraction(x, s, t1) =>  t1.subst(x, Fix(t))
     case _ => Fix(t.eval)
   }
   override def alpha(): FV = t.alpha
@@ -599,7 +599,7 @@ class FV(t: List[Variable]) {
   }
   
   def remove(s: String): FV = {
-    new FV(t.filter(x => !(x.toString() eq s)))
+    new FV(t.filter(x => !(x.toString() == s)))
   }
   
   def t() : List[Variable] = t
