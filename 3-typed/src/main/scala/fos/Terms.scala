@@ -442,7 +442,7 @@ case class Fix(t: Term) extends Term with Value {
   override def subst(x: String, s: Term) = Fix(t.subst(x,s))
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def eval() = t match {
-    case Abstraction(x, s, t) => t.subst(x, this)
+    case Abstraction(x, s, t) => t.subst(x, Fix(t))
     case _ => Fix(t.eval)
   }
   override def alpha(): FV = t.alpha
