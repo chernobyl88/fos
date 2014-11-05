@@ -49,13 +49,13 @@ case class IsZero(t: Term) extends Term  {
     }
      
   }
-  override def subst(x: String, s: Term) = IsZero(t.subst(x,s))
+  override def subst(x: String, s: Term) = IsZero(t.subst(x,s)).setPos(this.pos)
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def eval() = {
     t match {
       case Zero => True
       case Succ(e) => False
-      case _ => IsZero(t.eval)
+      case _ => IsZero(t.eval).setPos(this.pos)
     }
   }
   override def alpha(): FV = t.alpha
@@ -74,7 +74,7 @@ case class Pred(t: Term) extends Term {
       throw new Exception("parameter type mismatch: expected Nat, found " + t.getType+ "(" + t.pos + ")")
     }
   }
-  override def subst(x: String, s: Term) = Pred(t.subst(x,s))
+  override def subst(x: String, s: Term) = Pred(t.subst(x,s)).setPos(this.pos)
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def eval() = {
     var temp = t.eval
@@ -83,8 +83,8 @@ case class Pred(t: Term) extends Term {
 	      case Succ(e) => {
 	        e
 	      }
-	      case Zero => Zero
-	      case _ => Pred(temp)
+	      case Zero => Zero.setPos(t.pos)
+	      case _ => Pred(temp).setPos(this.pos)
 	    }
     } else
       Pred(temp)
@@ -103,7 +103,7 @@ case class Succ(t: Term) extends Term with Value {
       throw new Exception("parameter type mismatch: expected Nat, found " + t.getType+ "(" + t.pos + ")")
     }
   }
-  override def subst(x: String, s: Term) = Succ(t.subst(x,s))
+  override def subst(x: String, s: Term) = Succ(t.subst(x,s)).setPos(this.pos)
   override def setType(x: String, T: Type) = t.setType(x, T)
   def getIsNum(): Boolean = {
     def inner(e: Term): Boolean = {
@@ -116,7 +116,7 @@ case class Succ(t: Term) extends Term with Value {
     
     inner(t)
   }
-  override def eval() = Succ(t.eval)
+  override def eval() = Succ(t.eval).setPos(this.pos)
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
     case Succ(e) => e == t
@@ -137,13 +137,13 @@ case class If(t1: Term, t2: Term, t3: Term) extends Term {
       }
     }
   }
-  override def subst(x: String, s: Term) = If(t1.subst(x,s),t2.subst(x,s),t3.subst(x,s))
+  override def subst(x: String, s: Term) = If(t1.subst(x,s),t2.subst(x,s),t3.subst(x,s)).setPos(this.pos)
   override def setType(x: String, T: Type) = t1.setType(x, T) && t2.setType(x, T) && t3.setType(x, T)
   override def eval() = {
     t1 match {
       case True => t2
       case False => t3
-      case _ => If(t1.eval, t2, t3)
+      case _ => If(t1.eval, t2, t3).setPos(this.pos)
     }
   }
   override def alpha(): FV = t1.alpha union t2.alpha union t3.alpha
@@ -218,14 +218,14 @@ case class Abstraction(x: String,T:Type, t: Term) extends Term with Value{
     if (t == temp)
       this
     else
-      Abstraction(x, T, temp)
+      Abstraction(x, T, temp).setPos(this.pos)
   }
   override def subst(e1: String, s: Term): Term = {
       if(! (x == e1)){
 	      if (s.alpha contains x) {
-	        Abstraction(x+"1", T, t.subst(x, Variable(x+"1"))).subst(x, s)
+	        Abstraction(x+"1", T, t.subst(x, Variable(x+"1"))).subst(x, s).setPos(this.pos)
 	      } else {
-	        Abstraction(x, T, t.subst(e1, s))
+	        Abstraction(x, T, t.subst(e1, s)).setPos(this.pos)
 	      }
       } else {
         this
@@ -281,9 +281,9 @@ case class Application(t1: Term, t2: Term) extends Term {
       if (t1 == temp)
         this
       else
-        Application(temp, t2)
+        Application(temp, t2).setPos(this.pos)
     }else
-       Application(t1, temp)
+       Application(t1, temp).setPos(this.pos)
   }
   override def eval() = t2 match {
     case e:Value => t1 match {
@@ -302,7 +302,7 @@ case class Application(t1: Term, t2: Term) extends Term {
     }
     case _ => checkTerm
   }
-  override def subst(x: String, s: Term): Term = Application(t1.subst(x, s), t2.subst(x, s))
+  override def subst(x: String, s: Term): Term = Application(t1.subst(x, s), t2.subst(x, s)).setPos(this.pos)
   override def alpha(): FV = t1.alpha union t2.alpha
   override def equals(t1: Term): Boolean = t1 match {
     case Application(e1, e2) => (e1 == t1) && (e2 == t2) 
@@ -321,9 +321,9 @@ case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
   }
   override def eval() = {
     if(Abstraction(x,T,t2).eval() == Abstraction(x,T,t2)){
-      Application(Abstraction(x,T,t2),t1).eval()
+      Application(Abstraction(x,T,t2),t1).eval().setPos(this.pos)
     } else {
-      Application(Abstraction(x,T,t2).eval(),t1)
+      Application(Abstraction(x,T,t2).eval(),t1).setPos(this.pos)
     }
   }
   override def subst(e1: String, s: Term): Term = {
@@ -331,9 +331,9 @@ case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
         Let(x, T, t1.subst(x, s), t2.subst(x, s))
       } else{
 	      if (s.alpha contains x) {
-	        Let(x+"1", T, t1.subst(x, Variable(x+"1")), t2.subst(x, Variable(x+"1"))).subst(x, s)
+	        Let(x+"1", T, t1.subst(x, Variable(x+"1")), t2.subst(x, Variable(x+"1"))).subst(x, s).setPos(this.pos)
 	      } else {
-	        Let(x, T, t1.subst(e1, s), t2.subst(e1, s))
+	        Let(x, T, t1.subst(e1, s), t2.subst(e1, s)).setPos(this.pos)
 	      }
       }
     }
@@ -351,13 +351,13 @@ case class Pair(t1: Term,t2: Term) extends Term {
   override def eval() = {
     var temp = t1.eval
     if(temp == t1){
-      Pair(t1,t2.eval())
+      Pair(t1,t2.eval()).setPos(this.pos)
     } else {
-      Pair(temp,t2)
+      Pair(temp,t2).setPos(this.pos)
     }
   }
   
-  override def subst(e1: String, s: Term): Term = Pair(t1.subst(e1, s), t2.subst(e1, s))
+  override def subst(e1: String, s: Term): Term = Pair(t1.subst(e1, s), t2.subst(e1, s)).setPos(this.pos)
   override def alpha(): FV = t1.alpha union t2.alpha
   override def equals(t1: Term): Boolean = t1 match {
     case Pair(e1, e2) => (e1 == t1) && (e2 == t2)
@@ -375,9 +375,9 @@ case class First(t: Term) extends Term {
     }
   override def eval() = t match{
     case Pair(e, _) => e
-    case _ => First(t.eval())
+    case _ => First(t.eval()).setPos(this.pos)
   }
-  override def subst(e1: String, s: Term): Term = First(t.subst(e1, s))
+  override def subst(e1: String, s: Term): Term = First(t.subst(e1, s)).setPos(this.pos)
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
     case First(e) => e == t
@@ -396,9 +396,9 @@ case class Second(t: Term) extends Term {
   }
   override def eval() = t match{
     case Pair(_, e) => e.eval()
-    case _ => Second(t.eval())
+    case _ => Second(t.eval()).setPos(this.pos)
   }
-  override def subst(e1: String, s: Term): Term = Second(t.subst(e1, s))
+  override def subst(e1: String, s: Term): Term = Second(t.subst(e1, s)).setPos(this.pos)
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
     case Second(e) => e == t
@@ -411,9 +411,9 @@ case class Inl(t: Term, ty: Type) extends Term with Value {
   val rightType = ty
   override def toString() = "Inl " + t + " as " + ty
   override def getType = new PlusType(ty, t.getType)
-  override def subst(x: String, s: Term) = Inl(t.subst(x,s),ty)
+  override def subst(x: String, s: Term) = Inl(t.subst(x,s),ty).setPos(this.pos)
   override def setType(x: String, T: Type) = t.setType(x, T)
-  override def eval() = Inl(t.eval,ty)
+  override def eval() = Inl(t.eval,ty).setPos(this.pos)
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
     case Inl(e,ty2) => (e == t) && ty2.sameType(ty)
@@ -426,9 +426,9 @@ case class Inr(t: Term, ty: Type) extends Term with Value {
   val rightType = t.getType
   override def toString() = "Inr " + t + " as " + ty
   override def getType = new PlusType(t.getType, ty)
-  override def subst(x: String, s: Term) = Inr(t.subst(x,s),ty)
+  override def subst(x: String, s: Term) = Inr(t.subst(x,s),ty).setPos(this.pos)
   override def setType(x: String, T: Type) = t.setType(x, T)
-  override def eval() = Inr(t.eval,ty)
+  override def eval() = Inr(t.eval,ty).setPos(this.pos)
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
     case Inr(e,ty2) => (e == t) && ty2.sameType(ty)
@@ -439,11 +439,11 @@ case class Inr(t: Term, ty: Type) extends Term with Value {
 case class Fix(t: Term) extends Term with Value {
   override def toString() = "Fix " + t
   override def getType = t.getType
-  override def subst(x: String, s: Term) = Fix(t.subst(x,s))
+  override def subst(x: String, s: Term) = Fix(t.subst(x,s)).setPos(this.pos)
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def eval() = t match {
     case Abstraction(x, s, t1) =>  t1.subst(x, this)
-    case _ => Fix(t.eval)
+    case _ => Fix(t.eval).setPos(this.pos)
   }
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
@@ -482,7 +482,7 @@ case class Case(t: Term, x1: Variable,t1: Term,x2: Variable,t2: Term) extends Te
         case _ => throw new Exception("parameter type mismatch: expected Inr or Inl, found " + t.getType+ "(" + t.pos + ")")
       }
     } else {
-     new Case(evalT, x1, t1, x2, t2) 
+     new Case(evalT, x1, t1, x2, t2).setPos(this.pos)
     }
   }
   override def alpha() = t.alpha union x1.alpha union t1.alpha union x2.alpha union t2.alpha

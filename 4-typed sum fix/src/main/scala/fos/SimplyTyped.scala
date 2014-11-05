@@ -153,10 +153,10 @@ object SimplyTyped extends StandardTokenParsers {
     }
 
   def main(args: Array[String]): Unit = {
-    var myData = "iszero pred 1";
-    
-    val tokens = new lexical.Scanner(myData)
-    //val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+    //var myData = "case ((\\x: Nat. if (fix (\\y: Nat->Bool. \\x:Nat. if iszero x then true else if iszero (pred x) then false else (y (pred(pred x))))) 140 then x else 0) 1) of inl x => true | inr x => false";
+    //myData = "iszero if true then true else false";
+    //val tokens = new lexical.Scanner(myData)
+    val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>
         try {
