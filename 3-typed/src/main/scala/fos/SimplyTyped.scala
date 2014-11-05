@@ -10,9 +10,7 @@ import scala.util.parsing.input._
 object SimplyTyped extends StandardTokenParsers {
   lexical.delimiters ++= List("(", ")", "\\", ".", "=>", ":", "=", "->", "{", "}", ",", "*", "+", "|")
   lexical.reserved   ++= List("Bool", "Nat", "true", "false", "if", "then", "else", "succ",
-                              "pred", "iszero", "let", "in", "fst", "snd", "inl", "inr",
-                              "case", "fix", "letrec", "of", "as")
-
+                              "pred", "iszero", "let", "in", "fst", "snd", "inl", "inr", "case", "fix", "letrec","as","of")
   /** Term     ::= SimpleTerm { SimpleTerm }
    */
   def Term: Parser[Term] = positioned(
@@ -157,10 +155,8 @@ object SimplyTyped extends StandardTokenParsers {
     }
 
   def main(args: Array[String]): Unit = {
-    var myData = "(fix (\\y: Nat->Bool. \\x:Nat. if iszero x then true else if iszero (pred x) then false else (y (pred(pred x))))) 7";
-    myData = ""
-    myData = "case inl true as Bool of inl x => true  | inr y => false";
-     //var myData = "((\\y. y) \\y.y)";
+    var myData = "case ((\\x: Nat. if (fix (\\y: Nat->Bool. \\x:Nat. if iszero x then true else if iszero (pred x) then false else (y (pred(pred x))))) 140 then x else 0) 1) of inl x => true | inr x => false";
+    myData = "iszero true";
      val tokens = new lexical.Scanner(myData)
    // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
