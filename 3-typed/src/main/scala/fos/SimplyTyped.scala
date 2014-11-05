@@ -8,9 +8,10 @@ import scala.util.parsing.input._
  *  the TAPL book.
  */
 object SimplyTyped extends StandardTokenParsers {
-  lexical.delimiters ++= List("(", ")", "\\", ".", ":", "=", "->", "{", "}", ",", "*")
+  lexical.delimiters ++= List("(", ")", "\\", ".", ":", "=", "->", "{", "}", ",", "*", "+", "|")
   lexical.reserved   ++= List("Bool", "Nat", "true", "false", "if", "then", "else", "succ",
-                              "pred", "iszero", "let", "in", "fst", "snd", "inl", "inr", "case", "fix", "letrec")
+                              "pred", "iszero", "let", "in", "fst", "snd", "inl", "inr",
+                              "case", "fix", "letrec", "=>", "of", "as")
 
   /** Term     ::= SimpleTerm { SimpleTerm }
    */
@@ -157,7 +158,8 @@ object SimplyTyped extends StandardTokenParsers {
 
   def main(args: Array[String]): Unit = {
     var myData = "(fix (\\y: Nat->Bool. \\x:Nat. if iszero x then true else if iszero (pred x) then false else (y (pred(pred x))))) 7";
-    var myData = ""
+    myData = ""
+    myData = "case inl true as Nat of inl x => x  | inr y => y";
      //var myData = "((\\y. y) \\y.y)";
      val tokens = new lexical.Scanner(myData)
    // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
