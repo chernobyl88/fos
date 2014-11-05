@@ -45,7 +45,7 @@ case class IsZero(t: Term) extends Term  {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(TypeNat(), TypeBool())
     } else {
-      throw new Exception("parameter type mismatch: expected Nat, found " + t.getType)
+      throw new Exception("parameter type mismatch: expected Nat, found " + t.getType + "(" + t.pos + ")")
     }
      
   }
@@ -71,7 +71,7 @@ case class Pred(t: Term) extends Term {
     if (t.getType.sameType(TypeNat())) {
       checkInnerFunction(t.getType(), TypeNat())
     } else {
-      throw new Exception("parameter type mismatch: expected Nat, found " + t.getType)
+      throw new Exception("parameter type mismatch: expected Nat, found " + t.getType+ "(" + t.pos + ")")
     }
   }
   override def subst(x: String, s: Term) = Pred(t.subst(x,s))
@@ -100,7 +100,7 @@ case class Succ(t: Term) extends Term with Value {
   override def getType = {
     if (t.getType.sameType(TypeNat())) TypeNat()
     else {
-      throw new Exception("parameter type mismatch: expected Nat, found " + t.getType)
+      throw new Exception("parameter type mismatch: expected Nat, found " + t.getType+ "(" + t.pos + ")")
     }
   }
   override def subst(x: String, s: Term) = Succ(t.subst(x,s))
@@ -131,9 +131,9 @@ case class If(t1: Term, t2: Term, t3: Term) extends Term {
       FunctionType(t1.getType, t2.getType)
     } else {
       if (t1.getType.sameType(TypeBool())) {
-      throw new Exception("parameter type mismatch: expected " + t2.getType + ", found " + t3.getType)
+      throw new Exception("parameter type mismatch: expected " + t2.getType + ", found " + t3.getType+ "(" + t3.pos + ")")
       } else {
-      throw new Exception("parameter type mismatch: expected Bool, found " + t1.getType)
+      throw new Exception("parameter type mismatch: expected Bool, found " + t1.getType+ "(" + t1.pos + ")")
       }
     }
   }
@@ -272,7 +272,7 @@ case class Application(t1: Term, t2: Term) extends Term {
     if (typ1.sameType(typ2))
       t1.getType
     else
-      throw new Exception("parameter type mismatch: expected " + t1.getType + ", found " + t2.getType)
+      throw new Exception("parameter type mismatch: expected " + t1.getType + ", found " + t2.getType+ "(" + t2.pos + ")")
   }
   def checkTerm(): Term = {
     var temp = t2.eval
@@ -295,7 +295,7 @@ case class Application(t1: Term, t2: Term) extends Term {
         if(typ.sameType(ty)){
           t3.subst(x,e)
         } else {
-        	throw new Exception("parameter type mismatch: expected " + e.getType + ", found " + ty.getType)
+        	throw new Exception("parameter type mismatch: expected " + e.getType + ", found " + ty.getType+ "(" + ty.pos + ")")
         }
       }
       case _ => checkTerm
@@ -317,7 +317,7 @@ case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
     if (t1.getType.sameType(t2.getType))
       FunctionType(t1.getType, t2.getType)
     else
-      throw new Exception("parameter type mismatch: expected " + t1.getType + ", found " + t2.getType)
+      throw new Exception("parameter type mismatch: expected " + t1.getType + ", found " + t2.getType+ "(" + t2.pos + ")")
   }
   override def eval() = {
     if(Abstraction(x,T,t2).eval() == Abstraction(x,T,t2)){
@@ -371,7 +371,7 @@ case class First(t: Term) extends Term {
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def getType() = t.getType match {
       case PairType(e, _) => FunctionType(t.getType, e.getType)
-      case e => throw new Exception("pair type expected but " + t.getType + " found")
+      case e => throw new Exception("pair type expected but " + t.getType + " found"+ "(" + t.pos + ")")
     }
   override def eval() = t match{
     case Pair(e, _) => e
@@ -391,7 +391,7 @@ case class Second(t: Term) extends Term {
   override def getType() = {
     t.getType match {
       case PairType(_, e) => FunctionType(t.getType, e.getType)
-      case e => throw new Exception("pair type expected but " + t.getType + " found")
+      case e => throw new Exception("pair type expected but " + t.getType + " found"+ "(" + t.pos + ")")
     }
   }
   override def eval() = t match{
@@ -460,15 +460,15 @@ case class Case(t: Term, x1: Variable,t1: Term,x2: Variable,t2: Term) extends Te
         if (t1.getType.sameType(e.leftType) && t2.getType.sameType(e.rightType))
           t.getType
         else
-          throw new Exception("parameter type mismatch: expected " + e.getType + ", found " + new PlusType(t1.getType, t2.getType))
+          throw new Exception("parameter type mismatch: expected " + e.getType + ", found " + new PlusType(t1.getType, t2.getType) + "(" + t.pos + ")")
       }
       case e:Inl => {
         if (t1.getType.sameType(e.leftType) && t2.getType.sameType(e.rightType))
           t.getType
         else
-          throw new Exception("parameter type mismatch: expected " + e.getType + ", found " + new PlusType(t1.getType, t2.getType))
+          throw new Exception("parameter type mismatch: expected " + e.getType + ", found " + new PlusType(t1.getType, t2.getType)+ "(" + t.pos + ")")
       }
-      case _ => throw new Exception("parameter type mismatch: expected Inr or Inl, found " + t.getType)
+      case _ => throw new Exception("parameter type mismatch: expected Inr or Inl, found " + t.getType+ "(" + t.pos + ")")
     }
   }
   override def subst(x: String, s: Term) = new Case(t.subst(x, s), x1, t1.subst(x, s), x2, t2.subst(x, s))
@@ -479,7 +479,7 @@ case class Case(t: Term, x1: Variable,t1: Term,x2: Variable,t2: Term) extends Te
       t match {
         case Inl(e, s) => t1.subst(x1.x, t)
         case Inr(e, s) => t2.subst(x2.x, t)
-        case _ => throw new Exception("parameter type mismatch: expected Inr or Inl, found " + t.getType)
+        case _ => throw new Exception("parameter type mismatch: expected Inr or Inl, found " + t.getType+ "(" + t.pos + ")")
       }
     } else {
      new Case(evalT, x1, t1, x2, t2) 
