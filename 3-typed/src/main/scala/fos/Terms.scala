@@ -471,7 +471,7 @@ case class Case(t: Term, x1: Variable,t1: Term,x2: Variable,t2: Term) extends Te
       case _ => throw new Exception("parameter type mismatch: expected Inr or Inl, found " + t.getType)
     }
   }
-  override def subst(x: String, s: Term) = new Case(t.subst(x, s), x1, t1.subst(x, s), x2, t2.subst(x, s))
+  override def subst(x: String, s: Term) = new Case(t.subst(x, s), x1, t1.subst(x, s), x2, t2.subst(x, s)).setPos(this.pos)
   override def setType(x: String, T: Type) = t.setType(x, T) && x1.setType(x, T) && t1.setType(x, T) && x2.setType(x, T) && t2.setType(x, T)
   override def eval() = {
     val evalT = t.eval
