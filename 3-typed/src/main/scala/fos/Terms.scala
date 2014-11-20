@@ -60,7 +60,7 @@ case class IsZero(t: Term) extends Term  {
   }
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
-    case IsZero(e) => e equals t
+    case IsZero(e) => e == t
     case _ => false
   }
 }
@@ -78,7 +78,7 @@ case class Pred(t: Term) extends Term {
   override def setType(x: String, T: Type) = t.setType(x, T)
   override def eval() = {
     var temp = t.eval
-    if (temp equals t) {
+    if (temp == t) {
 	    t match {
 	      case Succ(e) => {
 	        e
@@ -91,7 +91,7 @@ case class Pred(t: Term) extends Term {
   }
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
-    case Pred(e) => e equals t
+    case Pred(e) => e == t
     case _ => false
   }
 }
@@ -119,7 +119,7 @@ case class Succ(t: Term) extends Term with Value {
   override def eval() = Succ(t.eval).setPos(this.pos)
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
-    case Succ(e) => e equals t
+    case Succ(e) => e == t
     case _ => false
   }
 }
@@ -131,9 +131,9 @@ case class If(t1: Term, t2: Term, t3: Term) extends Term {
       FunctionType(t1.getType, t2.getType)
     } else {
       if (t1.getType.sameType(TypeBool())) {
-      throw new Exception("parameter type mismatch: expected " + t2.getType + ", found " + t3.getType+ "(" + t3.pos + ")")
+    	  throw new Exception("parameter type mismatch: expected " + t2.getType + ", found " + t3.getType+ "(" + t3.pos + ")")
       } else {
-      throw new Exception("parameter type mismatch: expected Bool, found " + t1.getType+ "(" + t1.pos + ")")
+    	  throw new Exception("parameter type mismatch: expected Bool, found " + t1.getType+ "(" + t1.pos + ")")
       }
     }
   }
@@ -148,7 +148,7 @@ case class If(t1: Term, t2: Term, t3: Term) extends Term {
   }
   override def alpha(): FV = t1.alpha union t2.alpha union t3.alpha
   override def equals(t1: Term): Boolean = t1 match {
-    case If(e1, e2, e3) => (e1 equals t1) && (e2 equals t2) && (e3 equals t3)
+    case If(e1, e2, e3) => (e1 == t1) && (e2 == t2) && (e3 == t3)
     case _ => false
   }
 }
@@ -234,7 +234,7 @@ case class Abstraction(x: String,T:Type, t: Term) extends Term with Value{
   override def alpha(): FV = t.alpha remove x
   
   override def equals(t1: Term): Boolean = t1 match {
-    case Abstraction(x1, T, t1) => (x1 == x) && (t equals t1)
+    case Abstraction(x1, T, t1) => (x1 == x) && (t == t1)
     case _ => false
   }
 }
@@ -276,9 +276,9 @@ case class Application(t1: Term, t2: Term) extends Term {
   }
   def checkTerm(): Term = {
     var temp = t2.eval
-    if (t2 equals temp) {
+    if (t2 == temp) {
       temp = t1.eval
-      if (t1 equals temp)
+      if (t1 == temp)
         this
       else
         Application(temp, t2).setPos(this.pos)
@@ -305,7 +305,7 @@ case class Application(t1: Term, t2: Term) extends Term {
   override def subst(x: String, s: Term): Term = Application(t1.subst(x, s), t2.subst(x, s)).setPos(this.pos)
   override def alpha(): FV = t1.alpha union t2.alpha
   override def equals(t1: Term): Boolean = t1 match {
-    case Application(e1, e2) => (e1 equals t1) && (e2 equals t2) 
+    case Application(e1, e2) => (e1 == t1) && (e2 == t2) 
     case _ => false
   }
 }
@@ -339,7 +339,7 @@ case class Let(x: String,T:Type, t1: Term, t2: Term) extends Term {
     }
   override def alpha(): FV = t2.alpha remove x
   override def equals(t1: Term): Boolean = t1 match {
-    case Let(x1, T, e1, e2) => (x == x) && (e1 equals t1) && (e2 equals t2)
+    case Let(x1, T, e1, e2) => (x == x) && (e1 == t1) && (e2 == t2)
     case _ => false
   }
 }
@@ -380,7 +380,7 @@ case class First(t: Term) extends Term {
   override def subst(e1: String, s: Term): Term = First(t.subst(e1, s)).setPos(this.pos)
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
-    case First(e) => e equals t
+    case First(e) => e == t
     case _ => false
   }
 }
@@ -401,7 +401,7 @@ case class Second(t: Term) extends Term {
   override def subst(e1: String, s: Term): Term = Second(t.subst(e1, s)).setPos(this.pos)
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
-    case Second(e) => e equals t
+    case Second(e) => e == t
     case _ => false
   }
 }
@@ -416,7 +416,7 @@ case class Inl(t: Term, ty: Type) extends Term with Value {
   override def eval() = Inl(t.eval,ty).setPos(this.pos)
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
-    case Inl(e,ty2) => (e equals t) && ty2.sameType(ty)
+    case Inl(e,ty2) => (e == t) && ty2.sameType(ty)
     case _ => false
   }
 }
@@ -431,7 +431,7 @@ case class Inr(t: Term, ty: Type) extends Term with Value {
   override def eval() = Inr(t.eval,ty).setPos(this.pos)
   override def alpha(): FV = t.alpha
   override def equals(t1: Term): Boolean = t1 match {
-    case Inr(e,ty2) => (e equals t) && ty2.sameType(ty)
+    case Inr(e,ty2) => (e == t) && ty2.sameType(ty)
     case _ => false
   }
 }
@@ -471,7 +471,7 @@ case class Case(t: Term, x1: Variable,t1: Term,x2: Variable,t2: Term) extends Te
       case _ => throw new Exception("parameter type mismatch: expected Inr or Inl, found " + t.getType+ "(" + t.pos + ")")
     }
   }
-  override def subst(x: String, s: Term) = new Case(t.subst(x, s), x1, t1.subst(x, s), x2, t2.subst(x, s)).setPos(this.pos)
+  override def subst(x: String, s: Term) = new Case(t.subst(x, s), x1, t1.subst(x, s), x2, t2.subst(x, s))
   override def setType(x: String, T: Type) = t.setType(x, T) && x1.setType(x, T) && t1.setType(x, T) && x2.setType(x, T) && t2.setType(x, T)
   override def eval() = {
     val evalT = t.eval
@@ -495,14 +495,14 @@ case class Case(t: Term, x1: Variable,t1: Term,x2: Variable,t2: Term) extends Te
 trait TypeError
 
 /** Abstract Syntax Trees for types. */
-abstract class Type extends Term {
+abstract class Type() extends Term {
   def sameType(t1: Type) : Boolean
   def finalType() : Type = this
   override def equals(t1: Term): Boolean = false
   override def getType(): Type = this
 }
 
-case class TypeBool extends Type {
+case class TypeBool() extends Type {
   override def toString() = "Bool"
   override def sameType(t1: Type): Boolean = t1 match {
     case TypeBool() => true
@@ -511,7 +511,7 @@ case class TypeBool extends Type {
   }
 }
 
-case class NoTypeAssigned extends Type {
+case class NoTypeAssigned() extends Type {
   override def toString() = "No type assigned"
   override def sameType(t1: Type): Boolean = t1 match {
     case NoTypeAssigned() => true
@@ -520,7 +520,7 @@ case class NoTypeAssigned extends Type {
   }
 }
 
-case class TypeNat extends Type {
+case class TypeNat() extends Type {
   override def toString() = "Nat"
   override def sameType(t1: Type): Boolean = t1 match {
     case TypeNat() => true

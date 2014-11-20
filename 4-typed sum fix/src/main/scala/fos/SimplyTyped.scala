@@ -8,10 +8,9 @@ import scala.util.parsing.input._
  *  the TAPL book.
  */
 object SimplyTyped extends StandardTokenParsers {
-  lexical.delimiters ++= List("(", ")", "\\", ".", ":", "=", "->", "{", "}", ",", "*")
+  lexical.delimiters ++= List("(", ")", "\\", ".", "=>", ":", "=", "->", "{", "}", ",", "*", "+", "|")
   lexical.reserved   ++= List("Bool", "Nat", "true", "false", "if", "then", "else", "succ",
-                              "pred", "iszero", "let", "in", "fst", "snd")
-
+                              "pred", "iszero", "let", "in", "fst", "snd", "inl", "inr", "case", "fix", "letrec","as","of")
   /** Term     ::= SimpleTerm { SimpleTerm }
    */
   def Term: Parser[Term] = positioned(
@@ -33,14 +32,16 @@ object SimplyTyped extends StandardTokenParsers {
     | numericLit ^^ {case num => decomposeNum(num.toInt)}
     | ident ^^ {case str => Variable(str)}
 	| ("\\" ~> ident) ~ (":" ~> Type) ~ ("." ~> Term) ^^ { case str ~ t1 ~ e1 => Abstraction(str,t1, e1)}
-	| "(" ~> Term <~ ")" ^^ { case e1 =>{
-	  println("My group: " + e1)
-	 e1}}
+	| "(" ~> Term <~ ")" ^^ { case e1 => e1}
 	| ("let" ~> ident) ~ (":" ~> Type) ~ ("=" ~> Term) ~ ("in" ~> Term)^^ { case str ~ t1 ~ e1 ~ e2 => Let(str,t1, e1,e2)}
 	| "{" ~> Term ~","~ Term <~ "}" ^^ { case e1 ~","~ e2 => Pair(e1,e2)}
 	| "fst" ~> Term ^^ { case e1 => First(e1)}
 	| "snd" ~> Term ^^ { case e1 => Second(e1)}
-    | failure("illegal start of simple term"))
+	| "case" ~ Term ~ "of" ~ "inl" ~ ident ~ "=>" ~ Term  ~ "|" ~ "inr" ~ ident ~ "=>" ~ Term ^^{ case "case" ~ t ~ "of" ~ "inl" ~ x1 ~ "=>" ~ t1  ~ "|" ~ "inr" ~ x2 ~ "=>" ~ t2 =>Case(t,Variable(x1),t1,Variable(x2),t2)}
+    | "inl" ~ Term  ~ "as" ~ Type ^^{ case "inl" ~ e1  ~ "as" ~ t1 => Inl(e1,t1)}
+	| "inr" ~ Term  ~ "as" ~ Type ^^{ case "inr" ~ e1  ~ "as" ~ t1 => Inr(e1,t1)}
+	| "fix" ~ Term  ^^ { case "fix" ~ e1 => Fix(e1)}
+	| failure("illegal start of simple term"))
 
   /** Type       ::= SimpleType [ "->" Type ]
    */
@@ -52,8 +53,17 @@ object SimplyTyped extends StandardTokenParsers {
             case e1 :: Nil => List(e1._2)
             case e1 :: e2 => e1._2 :: inner(e2)
           }
-          parseType(e1 :: inner(e2))
+          parseFuncType(e1 :: inner(e2))
 		}
+      }
+      | simpleTyped ~ rep ("+" ~ Type) ^^ { case e1 ~ e2 => {
+          def inner(t: List[SimplyTyped.~[String,Type]]): List[Type] = t match {
+            case Nil => List()
+            case e1 :: Nil => List(e1._2)
+            case e1 :: e2 => e1._2 :: inner(e2)
+          }
+          parsePlusType(e1 :: inner(e2))
+      	}
       }
       | failure("illegal start of type"))
       
@@ -71,9 +81,15 @@ object SimplyTyped extends StandardTokenParsers {
     case Nil => throw NoRuleApplies(null)
   }
   
-  def parseType(e1: List[Type]) : Type = e1 match{
+  def parseFuncType(e1: List[Type]) : Type = e1 match{
     case h1 :: Nil => h1
-    case h1 :: t1 => FunctionType(h1, parseType(t1))
+    case h1 :: t1 => FunctionType(h1, parseFuncType(t1))
+    case Nil => throw NoRuleApplies(null)
+  }
+  
+  def parsePlusType(e1: List[Type]) : Type = e1 match{
+    case h1 :: Nil => h1
+    case h1 :: t1 => PlusType(h1, parsePlusType(t1))
     case Nil => throw NoRuleApplies(null)
   }
     
@@ -137,6 +153,9 @@ object SimplyTyped extends StandardTokenParsers {
     }
 
   def main(args: Array[String]): Unit = {
+    //var myData = "case ((\\x: Nat. if (fix (\\y: Nat->Bool. \\x:Nat. if iszero x then true else if iszero (pred x) then false else (y (pred(pred x))))) 140 then x else 0) 1) of inl x => true | inr x => false";
+    //myData = "iszero if true then true else false";
+    //val tokens = new lexical.Scanner(myData)
     val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>

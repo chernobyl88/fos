@@ -32,9 +32,7 @@ object SimplyTyped extends StandardTokenParsers {
     | numericLit ^^ {case num => decomposeNum(num.toInt)}
     | ident ^^ {case str => Variable(str)}
 	| ("\\" ~> ident) ~ (":" ~> Type) ~ ("." ~> Term) ^^ { case str ~ t1 ~ e1 => Abstraction(str,t1, e1)}
-	| "(" ~> Term <~ ")" ^^ { case e1 =>{
-	  println("My group: " + e1)
-	 e1}}
+	| "(" ~> Term <~ ")" ^^ { case e1 => e1}
 	| ("let" ~> ident) ~ (":" ~> Type) ~ ("=" ~> Term) ~ ("in" ~> Term)^^ { case str ~ t1 ~ e1 ~ e2 => Let(str,t1, e1,e2)}
 	| "{" ~> Term ~","~ Term <~ "}" ^^ { case e1 ~","~ e2 => Pair(e1,e2)}
 	| "fst" ~> Term ^^ { case e1 => First(e1)}
@@ -156,9 +154,9 @@ object SimplyTyped extends StandardTokenParsers {
 
   def main(args: Array[String]): Unit = {
     var myData = "case ((\\x: Nat. if (fix (\\y: Nat->Bool. \\x:Nat. if iszero x then true else if iszero (pred x) then false else (y (pred(pred x))))) 140 then x else 0) 1) of inl x => true | inr x => false";
-    myData = "iszero if true then true else false";
-     val tokens = new lexical.Scanner(myData)
-   // val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+    //myData = "iszero if true then true else false";
+    //val tokens = new lexical.Scanner(myData)
+    val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>
         try {
