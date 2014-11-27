@@ -23,6 +23,7 @@ case object TypeBool extends Type
 /** Type Schemes are not types. */
 case class TypeScheme(args: List[TypeVar], tp: Type) {
   //   ... To complete ... 
+  def instantiate : Type = // TODO
   override def toString() = args.mkString("[", ", ", "].") + tp
 }
 
