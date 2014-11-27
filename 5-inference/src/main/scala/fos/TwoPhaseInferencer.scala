@@ -29,6 +29,10 @@ class TwoPhaseInferencer extends TypeInferencers {
       case (TypeVar(a), TypeVar(b)) if (a == b) =>
         unify(c.tail)
   //   ... To complete ... 
+      case (TypeFun(a,b), TypeFun(x,y)) => {
+        var d = (a,x) :: (b,y) :: c.tail
+        unify(d)
+      }
       case (t1, t2) =>
         throw TypeError("Could not unify: " + t1 + " with " + t2)
     }
