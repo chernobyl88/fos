@@ -33,13 +33,18 @@ object Type {
 abstract class Substitution extends (Type => Type) {
 
   var indent = 0
+  var constr : List[(TypeVar, Type)] = Nil;
+  
+  def lookup(t: TypeVar) : Type;
 
   //   ... To complete ... 
   def apply(tp: Type): Type = {
     //println("  " * indent + "in: " + tp + "   subst: " + this)
     indent = indent + 1
     val result = tp match {
-  //   ... To complete ... 
+	    case x: TypeVar => lookup(x)
+	    case TypeFun(a, b) => TypeFun(apply(a), apply(b)) 
+	    case _ => tp
     }
     indent = indent - 1
     //println("  " * indent + "out: " + result + "   subst: " + this)
@@ -54,7 +59,32 @@ abstract class Substitution extends (Type => Type) {
   def apply(env: List[(String, TypeScheme)]): List[(String, TypeScheme)] =
     env map { (pair) => (pair._1, TypeScheme(pair._2.args, apply(pair._2.tp))) }
 
-  //   ... To complete ... 
+  def extending(t: TypeVar, T: Type) = constr = (t, T) :: constr
+}
+
+class oneSubst extends Substitution {
+  
+  def lookup(t: TypeVar, c: List[(TypeVar, Type)]): Type = c match {
+    case Nil => t
+    case hCons :: tCons => if (hCons._1 == t) hCons._1 else lookup(t, tCons)
+  }
+  
+  override def lookup(t: TypeVar) : Type = {
+   lookup(t, constr)
+  }
+}
+
+class CoupleSubst(s1: Substitution, s2: Substitution) extends Substitution {
+  var cons1 = s1
+  var cons2 = s2
+  override def lookup(t: TypeVar) : Type = {
+    val t1 = cons1.lookup(t)
+    if (t1 == t) cons2.lookup(t) else t1
+  }
+  
+  override def apply(tp: Type) = cons2(cons1(tp))
+  override def apply(tp: (Type, Type)) = cons2(cons1(tp))
+  override def extending(t: TypeVar, T: Type) = cons2.extending(t: TypeVar, T: Type)
 }
 
 /** The empty substitution. */
