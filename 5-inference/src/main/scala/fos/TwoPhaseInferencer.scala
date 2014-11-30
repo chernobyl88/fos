@@ -20,19 +20,6 @@ class TwoPhaseInferencer extends TypeInferencers {
       TypingResult(t1.instantiate, noConstraints)
   //   ... To complete ... 
   }
-  
-  def remplace(c:Constraint, tO: Type, tN : Type):Constraint = c match{
-    case (t1,t2) => {
-      var a = remplace(t1, tO,tN)
-      var b = remplace(t2, tO,tN)
-      new Constraint(a,b)
-    }
-  }
-  def remplace(t:Type, tO: Type, tN : Type):Type = t match{
-    case TypeVar(a) => if(t == tO) tN else t
-    case TypeFun(a,b) => TypeFun(remplace(a,tO,tN),remplace(b,tO,tN))
-    case t => t
-  }
 
   /**
    */
@@ -42,14 +29,14 @@ class TwoPhaseInferencer extends TypeInferencers {
       case (TypeVar(a), TypeVar(b)) if (a == b) =>
         unify(c.tail)
       case (TypeVar(a), t) =>{
-        var d= c.tail
-        for (e <- d) remplace(e,TypeVar(a),t)
-        unify(d)
+        var d = new oneSubst()
+        d.extending(TypeVar(a), t)
+        new CoupleSubst(d,unify(c.tail))
       }
       case (t,TypeVar(a)) =>{
-        var d= c.tail
-        for (e <- d) remplace(e,TypeVar(a),t)
-        unify(d)
+        var d = new oneSubst()
+        d.extending(TypeVar(a), t)
+        new CoupleSubst(d,unify(c.tail))
       }
       case (TypeFun(a,b), TypeFun(x,y)) => {
         var d = (a,x) :: (b,y) :: c.tail
