@@ -22,13 +22,28 @@ case object TypeBool extends Type
 
 /** Type Schemes are not types. */
 case class TypeScheme(args: List[TypeVar], tp: Type) {
-  //   ... To complete ... 
-  def instantiate : Type = // TODO
+  def instantiate : Type = {
+    def chaining(t: Type, tv: TypeVar, n: TypeVar): Type = t match {
+      case x: TypeVar if (x == tv) => n
+      case TypeFun(a, b) => TypeFun(chaining(a, tv, n), chaining(b, tv, n))
+      case _ => t
+    }
+    (tp /: args)(chaining(_, _, FreshName.newName()))
+  }
   override def toString() = args.mkString("[", ", ", "].") + tp
 }
 
 object Type {
   //   ... To complete ... 
+}
+
+
+object FreshName {
+  var nbr = 0
+  def newName(): TypeVar = {
+    nbr += 1
+    new TypeVar("_" + nbr)
+  }
 }
 
 abstract class Substitution extends (Type => Type) {
