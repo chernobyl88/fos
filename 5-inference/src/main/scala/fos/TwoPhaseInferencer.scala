@@ -31,7 +31,7 @@ class TwoPhaseInferencer extends TypeInferencers {
     }
     case IsZero(t) => {
       val TypingResult(pT, c) = collect(env, t)
-      TypingResult(TypeNat, (pT, TypeNat) :: c)
+      TypingResult(TypeBool, (pT, TypeNat) :: c)
     }
     case If(t1, t2, t3) => {
       val TypingResult(pT1, c1) = collect(env, t1)
@@ -56,13 +56,14 @@ class TwoPhaseInferencer extends TypeInferencers {
       val freshVar = FreshName.newName
       val TypingResult(pT1, c1) = collect(env, t1)
       val TypingResult(pT2, c2) = collect(env, t2)
+      println(TypingResult(freshVar, (pT1, TypeFun(pT2, freshVar)) :: c1 ::: c2))
       TypingResult(freshVar, (pT1, TypeFun(pT2, freshVar)) :: c1 ::: c2)
     }
     case Let(x, v, t) => {
       val freshVar = FreshName.newName
       val TypingResult(pTv, cv) = collect(env, v)
       
-      val subst = unify(cv)
+      val subst = unify(cv, emptySubst)
       val S = subst(pTv)
       
       val TypingResult(pT, c) = collect((x, TypeScheme(isFree(subst(env), freshVar), freshVar)) :: env, t)
@@ -78,32 +79,24 @@ class TwoPhaseInferencer extends TypeInferencers {
 
   /**
    */
-  def unify(c: List[Constraint]): Substitution =
-    if (c.isEmpty) emptySubst
-    else c.head match {
-      case (TypeVar(a), TypeVar(b)) if (a == b) =>
-        unify(c.tail)
-      case (TypeVar(a), t) =>{
-        var d = new oneSubst()
-        d.extending(TypeVar(a), t)
-        new CoupleSubst(d,unify(c.tail))
+  def unify(c: List[Constraint], s: Substitution): Substitution = { //Probleme here and in substitution
+    println(s);
+    c match {
+      case (TypeVar(a), TypeVar(b)) :: tail if (a == b) => unify(tail, s)
+      case ((TypeNat, TypeNat) | (TypeBool, TypeBool)) :: tail => unify(tail, s)
+      case (TypeVar(x), y) :: tail => unify(tail, s.extending(TypeVar(x), y))
+      case (x, TypeVar(y)) :: tail =>  unify(tail, s.extending(TypeVar(y), x))
+      case (TypeFun(x1, x2), TypeFun(y1, y2)) :: tail => unify((x1, y1) :: (x2, y2) :: tail, s)
+      case (x, y) :: tail => throw TypeError("Could not unify: " + x + " with " + y)
+      case Nil => {
+        s
       }
-      case (t,TypeVar(a)) =>{
-        var d = new oneSubst()
-        d.extending(TypeVar(a), t)
-        new CoupleSubst(d,unify(c.tail))
-      }
-      case (TypeFun(a,b), TypeFun(x,y)) => {
-        var d = (a,x) :: (b,y) :: c.tail
-        unify(d)
-      }
-      case (t1, t2) =>
-        throw TypeError("Could not unify: " + t1 + " with " + t2)
     }
+  }
 
   override def typeOf(t: Term): Type = try {
     val TypingResult(tp, c) = collect(Nil: Env, t)
-    val s = unify(c)
+    val s = unify(c, emptySubst)
     s(tp)
   } catch {
     case TypeError(msg) =>

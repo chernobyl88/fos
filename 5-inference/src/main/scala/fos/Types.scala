@@ -24,7 +24,7 @@ case object TypeBool extends Type
 case class TypeScheme(args: List[TypeVar], tp: Type) {
   def instantiate : Type = {
     def chaining(t: Type, tv: TypeVar, n: TypeVar): Type = t match {
-      case x: TypeVar if (x == tv) => n
+      case x: TypeVar if (x == tv) => tv
       case TypeFun(a, b) => TypeFun(chaining(a, tv, n), chaining(b, tv, n))
       case _ => t
     }
@@ -49,7 +49,6 @@ object FreshName {
 abstract class Substitution extends (Type => Type) {
 
   var indent = 0
-  var constr : List[(TypeVar, Type)] = Nil;
   
   def lookup(t: TypeVar) : Type;
 
@@ -75,10 +74,10 @@ abstract class Substitution extends (Type => Type) {
   def apply(env: List[(String, TypeScheme)]): List[(String, TypeScheme)] =
     env map { (pair) => (pair._1, TypeScheme(pair._2.args, apply(pair._2.tp))) }
 
-  def extending(t: TypeVar, T: Type) = constr = (t, T) :: constr
+  def extending(t: TypeVar, T: Type): Substitution
 }
 
-class oneSubst extends Substitution {
+class oneSubst(constr : List[(TypeVar, Type)]) extends Substitution {
   
   def lookup(t: TypeVar, c: List[(TypeVar, Type)]): Type = c match {
     case Nil => t
@@ -88,6 +87,8 @@ class oneSubst extends Substitution {
   override def lookup(t: TypeVar) : Type = {
    lookup(t, constr)
   }
+  
+  override def extending(x:TypeVar, y:Type):Substitution = new oneSubst((x, y) :: constr)
 }
 
 class CoupleSubst(s1: Substitution, s2: Substitution) extends Substitution {
@@ -106,4 +107,5 @@ class CoupleSubst(s1: Substitution, s2: Substitution) extends Substitution {
 /** The empty substitution. */
 object emptySubst extends Substitution {
   def lookup(t: TypeVar) = t
+  override def extending(x:TypeVar, y:Type):Substitution = new oneSubst((x, y) :: Nil)
 }
