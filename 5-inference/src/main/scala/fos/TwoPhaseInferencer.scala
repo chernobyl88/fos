@@ -18,8 +18,63 @@ class TwoPhaseInferencer extends TypeInferencers {
       if (t1 == null)
         throw TypeError("Unknown variable " + x)
       TypingResult(t1.instantiate, noConstraints)
-  //   ... To complete ... 
+    case True() => TypingResult(TypeBool, noConstraints)
+    case False() =>  TypingResult(TypeBool, noConstraints)
+    case Zero() => TypingResult(TypeNat, noConstraints)
+    case Succ(t) => {
+      val TypingResult(pT, c) = collect(env, t)
+      TypingResult(TypeNat, (pT, TypeNat) :: c)
+    }
+    case Pred(t) => {
+      val TypingResult(pT, c) = collect(env, t)
+      TypingResult(TypeNat, (pT, TypeNat) :: c)
+    }
+    case IsZero(t) => {
+      val TypingResult(pT, c) = collect(env, t)
+      TypingResult(TypeNat, (pT, TypeNat) :: c)
+    }
+    case If(t1, t2, t3) => {
+      val TypingResult(pT1, c1) = collect(env, t1)
+      val TypingResult(pT2, c2) = collect(env, t2)
+      val TypingResult(pT3, c3) = collect(env, t3)
+      TypingResult(pT2, (pT1, TypeBool) :: (pT2, pT3) :: c1 ::: c2 ::: c3)
+    }
+    case Abs(v, tp, t) => {
+      tp match {
+        case EmptyType => {
+          val freshVar = FreshName.newName
+          val TypingResult(pT, c) = collect((v, TypeScheme(List(freshVar), freshVar)) :: env, t)
+          TypingResult(TypeFun(freshVar,pT), c)
+        }
+        case _ => {
+	      val TypingResult(pT, c) = collect((v, TypeScheme(List(), tp.toType)) :: env, t)
+	      TypingResult(TypeFun(tp.toType, pT), c)
+        }
+      }
+    }
+    case App(t1, t2) => {
+      val freshVar = FreshName.newName
+      val TypingResult(pT1, c1) = collect(env, t1)
+      val TypingResult(pT2, c2) = collect(env, t2)
+      TypingResult(freshVar, (pT1, TypeFun(pT2, freshVar)) :: c1 ::: c2)
+    }
+    case Let(x, v, t) => {
+      val freshVar = FreshName.newName
+      val TypingResult(pTv, cv) = collect(env, v)
+      
+      val subst = unify(cv)
+      val S = subst(pTv)
+      
+      val TypingResult(pT, c) = collect((x, TypeScheme(isFree(subst(env), freshVar), freshVar)) :: env, t)
+      TypingResult(TypeFun(S, pT), c)
+    }
   }
+  
+  def isFree(env: Env, t: Type): List[TypeVar] = t match {
+    case TypeVar(x) if lookup(env, x) != Nil => TypeVar(x) :: Nil
+    case TypeFun(a, b) => isFree(env, a) ::: isFree(env, b)
+    case _ => Nil
+  } 
 
   /**
    */

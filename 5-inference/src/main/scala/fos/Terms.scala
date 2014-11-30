@@ -52,14 +52,18 @@ case class Let(x: String, v: Term, t: Term) extends Term {
 }
 
 /** Abstract Syntax Trees for types. */
-abstract class TypeTree extends Term
+abstract class TypeTree extends Term {
+  def toType() : Type
+}
 
 case object BoolType extends TypeTree {
   override def toString() = "Bool"
+  override def toType() = TypeBool
 }
 
 case object NatType extends TypeTree {
   override def toString() = "Nat"
+  override def toType() = TypeNat
 }
 
 case class FunType(t1: TypeTree, t2: TypeTree) extends TypeTree {
@@ -67,8 +71,10 @@ case class FunType(t1: TypeTree, t2: TypeTree) extends TypeTree {
     case FunType(_, _) => "(" + t1 + ")" // right-associative
     case _             => t1.toString
   }) + "->" + t2
+  override def toType() = TypeFun(t1.toType, t2.toType)
 }
 
 case object EmptyType extends TypeTree {
+  override def toType() = throw new Exception("No type for emptytype")
   override def toString() = "_"
 }

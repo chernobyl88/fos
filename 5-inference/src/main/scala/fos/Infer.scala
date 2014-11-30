@@ -76,7 +76,9 @@ object Infer extends StandardTokenParsers {
   val Inferencer = new TwoPhaseInferencer
 
   def main(args: Array[String]) {
-    val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
+      
+     var tokens = new lexical.Scanner("succ succ succ 1");
+    //val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>
         try {
