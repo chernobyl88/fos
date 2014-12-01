@@ -102,15 +102,29 @@ class oneSubst(constr : List[(TypeVar, Type)]) extends Substitution {
     inner(constr)
   }
   
+  def checkChainingVar(a: TypeVar) : Type = lookup(a) match {
+    case TypeVar(x) if (x == a.name) => a
+    case b:TypeVar => checkChainingVar(b)
+    case x => x
+  } 
+  
   override def checkInSet(t: TypeVar, T: Type) : Boolean = {
-    def inner(constr : List[(TypeVar, Type)]) : Boolean = constr match {
+    def inner(c : List[(TypeVar, Type)]) : Boolean = c match {
       case Nil => true
       case (a:TypeVar, b:Type) :: tail => {
         if (a.name == t.name)
           if (b == T)
         	  inner(tail)
-          else
-             throw TypeError("Variable already instancied in Substitution for another type")
+          else {
+        	 T match {
+        	   case c:TypeVar => if (checkChainingVar(c) == checkChainingVar(t)) {
+        	     inner(tail)
+        	   } else {
+        	     throw TypeError("Variable " + t + " already instancied in Substitution for " + b + " and try to instanciate for " + T + " (" + checkChainingVar(c) + ")")
+        	   }
+        	   case _ => throw TypeError("Variable " + t + " already instancied in Substitution for " + b + " and try to instanciate for " + T)
+        	 }
+          }
         else
           inner(tail)
       }
