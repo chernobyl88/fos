@@ -56,14 +56,13 @@ class TwoPhaseInferencer extends TypeInferencers {
       val freshVar = FreshName.newName
       val TypingResult(pT1, c1) = collect(env, t1)
       val TypingResult(pT2, c2) = collect(env, t2)
-      println(TypingResult(freshVar, (pT1, TypeFun(pT2, freshVar)) :: c1 ::: c2))
       TypingResult(freshVar, (pT1, TypeFun(pT2, freshVar)) :: c1 ::: c2)
     }
     case Let(x, v, t) => {
       val freshVar = FreshName.newName
       val TypingResult(pTv, cv) = collect(env, v)
       
-      val subst = unify(cv, emptySubst)
+      val subst = unify(cv)
       val S = subst(pTv)
       
       val TypingResult(pT, c) = collect((x, TypeScheme(isFree(subst(env), freshVar), freshVar)) :: env, t)
@@ -79,24 +78,24 @@ class TwoPhaseInferencer extends TypeInferencers {
 
   /**
    */
-  def unify(c: List[Constraint], s: Substitution): Substitution = { //Probleme here and in substitution
-    println(s);
-    c match {
-      case (TypeVar(a), TypeVar(b)) :: tail if (a == b) => unify(tail, s)
-      case ((TypeNat, TypeNat) | (TypeBool, TypeBool)) :: tail => unify(tail, s)
-      case (TypeVar(x), y) :: tail => unify(tail, s.extending(TypeVar(x), y))
-      case (x, TypeVar(y)) :: tail =>  unify(tail, s.extending(TypeVar(y), x))
-      case (TypeFun(x1, x2), TypeFun(y1, y2)) :: tail => unify((x1, y1) :: (x2, y2) :: tail, s)
-      case (x, y) :: tail => throw TypeError("Could not unify: " + x + " with " + y)
-      case Nil => {
-        s
-      }
+  def unify(c: List[Constraint]): Substitution = {
+    
+    def inner(c: List[Constraint], s: Substitution) : Substitution = c match {
+	      case (TypeVar(a), TypeVar(b)) :: tail if (a == b) => inner(tail, s)
+	      case ((TypeNat, TypeNat) | (TypeBool, TypeBool)) :: tail => inner(tail, s)
+	      case (TypeVar(x), y) :: tail if (s.checkInSet(TypeVar(x), y)) => inner(tail, s.extending(TypeVar(x), y))
+	      case (x, TypeVar(y)) :: tail if (s.checkInSet(TypeVar(y), x)) => inner(tail, s.extending(TypeVar(y), x))
+	      case (TypeFun(x1, x2), TypeFun(y1, y2)) :: tail => inner((x1, y1) :: (x2, y2) :: tail, s)
+	      case (x, y) :: tail => throw TypeError("Could not unify: " + x + " with " + y)
+	      case Nil => s
     }
+    
+    inner(c, emptySubst)
   }
 
   override def typeOf(t: Term): Type = try {
     val TypingResult(tp, c) = collect(Nil: Env, t)
-    val s = unify(c, emptySubst)
+    val s = unify(c)
     s(tp)
   } catch {
     case TypeError(msg) =>

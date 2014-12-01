@@ -77,7 +77,7 @@ object Infer extends StandardTokenParsers {
 
   def main(args: Array[String]) {
       
-     var tokens = new lexical.Scanner("(\\x. iszero x) 0");
+     var tokens = new lexical.Scanner("(\\x. if iszero x then succ x else x) 0");
     //val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
       case Success(trees, _) =>
