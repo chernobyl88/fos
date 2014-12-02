@@ -96,6 +96,7 @@ class TwoPhaseInferencer extends TypeInferencers {
   override def typeOf(t: Term): Type = try {
     val TypingResult(tp, c) = collect(Nil: Env, t)
     val s = unify(c)
+    //println(s)
     s(tp)
   } catch {
     case TypeError(msg) =>

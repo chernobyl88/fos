@@ -101,9 +101,8 @@ class oneSubst(constr : List[(TypeVar, Type)]) extends Substitution {
     	}
 	}
 	def checker(t: TypeVar, c: List[(TypeVar, Type)]): Type = c match {
-	  case Nil => t
-	  case (_, b) :: Nil => b
-	  case (_, b) :: tail => if (b == checker(t, tail)) b else throw TypeError("TypeError on: " + t + " typed as "+ b +" and as " + checker(t, tail) + "")
+	  case Nil => t  
+	  case (_, b) :: tail => b
 	}
 
    	checker(t, inner(t, c.filter(ti => ti._1 == t), List()))
@@ -132,9 +131,23 @@ class oneSubst(constr : List[(TypeVar, Type)]) extends Substitution {
 		case (t: TypeVar, u: TypeVar) :: tail if (f == u) => chaining(a, f, tail)
 		case (t: TypeVar, u: TypeVar) :: tail => (u, f) :: chaining(a, f, tail)
 		case (_, x) :: tail if (x == f)=> (a, f) :: chaining(a, f, tail)
-		case (_, TypeFun(c1, c2)) :: tail => f match {
-		  case TypeFun(d1, d2) => (c1, d1) :: (c2, d2) :: chaining(a, f, tail)
-		  case _ => throw TypeError("TypeError on: " + a + " typed as "+ f +" and as " + x + "")
+		case (_, TypeFun(c1:TypeVar, c2:TypeVar)) :: tail => f match {
+		  case TypeFun(d1:TypeVar, d2:TypeVar) => (if (c1 != d1) (c1, d1) :: List() else List()) ::: (if (c2 != d2) (c2, d2) :: List() else List()) ::: chaining(a, f, tail)
+		  case TypeFun(d1:TypeVar, d2) => (if (c1 != d1) (c1, d1) :: List() else List()) ::: (c2, d2) :: chaining(a, f, tail)
+		  case TypeFun(d1, d2:TypeVar) => (c1, d1) :: (if (c2 != d2) (c2, d2) :: List() else List()) ::: chaining(a, f, tail)
+		  case _ => throw TypeError("TypeError on: " + a + " typed as "+ f +" and as " + TypeFun(c1, c2) + "")
+		}
+		case (_, TypeFun(c1:TypeVar, c2)) :: tail => f match {
+		  case TypeFun(d1:TypeVar, d2:TypeVar) => (if (c1 != d1) (c1, d1) :: List() else List()) ::: (d2, c2) :: chaining(a, f, tail)
+		  case TypeFun(d1:TypeVar, d2) if (c2 == d2) => (if (c1 != d1) (c1, d1) :: List() else List()) ::: chaining(a, f, tail)
+		  case TypeFun(d1, d2:TypeVar) => (c1, d1) :: (d2, c2) :: chaining(a, f, tail)
+		  case _ => throw TypeError("TypeError on: " + a + " typed as "+ f +" and as " + TypeFun(c1, c2) + "")
+		}
+		case (_, TypeFun(c1, c2:TypeVar)) :: tail => f match {
+		  case TypeFun(d1:TypeVar, d2:TypeVar) => (if (c2 != d2) (c2, d2) :: List() else List()) ::: (d1, c1) :: chaining(a, f, tail)
+		  case TypeFun(d1:TypeVar, d2) => (d1, c1) :: (c2, d2) :: chaining(a, f, tail)
+		  case TypeFun(d1, d2:TypeVar) if (c1 == d1) => (if (c2 != d2) (c2, d2) :: List() else List()) ::: chaining(a, f, tail)
+		  case _ => throw TypeError("TypeError on: " + a + " typed as "+ f +" and as " + TypeFun(c1, c2) + "")
 		}
 		case (_, x) :: tail => throw TypeError("TypeError on: " + a + " typed as "+ f +" and as " + x + "")
 	}
