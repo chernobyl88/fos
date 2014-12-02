@@ -113,6 +113,11 @@ class oneSubst(constr : List[(TypeVar, Type)]) extends Substitution {
    lookup(t, constr)
   }
   
+  def lookup(t: Type) : Type = t match {
+    case x:TypeVar => lookup(x)
+    case _ => t
+  }
+  
   override def toString() = {
     def inner(c: List[(TypeVar, Type)]) : String  = c match{
       case (a, b) :: Nil => "(" + a + " -> " + b + ")"
@@ -127,6 +132,10 @@ class oneSubst(constr : List[(TypeVar, Type)]) extends Substitution {
 		case (t: TypeVar, u: TypeVar) :: tail if (f == u) => chaining(a, f, tail)
 		case (t: TypeVar, u: TypeVar) :: tail => (u, f) :: chaining(a, f, tail)
 		case (_, x) :: tail if (x == f)=> (a, f) :: chaining(a, f, tail)
+		case (_, TypeFun(c1, c2)) :: tail => f match {
+		  case TypeFun(d1, d2) => (c1, d1) :: (c2, d2) :: chaining(a, f, tail)
+		  case _ => throw TypeError("TypeError on: " + a + " typed as "+ f +" and as " + x + "")
+		}
 		case (_, x) :: tail => throw TypeError("TypeError on: " + a + " typed as "+ f +" and as " + x + "")
 	}
     
@@ -134,7 +143,11 @@ class oneSubst(constr : List[(TypeVar, Type)]) extends Substitution {
       case Nil => cons
       case (a, c: TypeVar) :: tail if (cons.filter(i => i._1 == a && i._2 == c).size > 0) => checker (b, cons, tail)
 	  case (a, c:TypeVar) :: tail => checker(b, (a, c) :: cons, tail)
-	  //case (a, TypeFun(c1, c2)) :: tail => (a, TypeFun(c1, c2)) :: checker(b, cons, tail) TODO
+	  case (a, TypeFun(c1, c2)) :: tail => {
+	    val checkOn1 = checker(lookup(c1), cons, cons.filter(i => i._1 == c1))
+	    val checkOn2 = checker(lookup(c2), cons, cons.filter(i => i._1 == c2))
+	    checker(b, (a, TypeFun(c1, c2)) :: checkOn1 ::: checkOn2 ::: cons, tail)
+	  }
 	  case (a, c) :: tail => b match {
 	    case x: TypeVar => checker(b, (a, c) :: (x, c) :: cons, tail)
 	    case _ => {
