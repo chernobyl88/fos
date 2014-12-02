@@ -55,6 +55,9 @@ abstract class Substitution extends (Type => Type) {
 
   //   ... To complete ... 
   def apply(tp: Type): Type = {
+    
+    //checkSanity();
+    
     //println("  " * indent + "in: " + tp + "   subst: " + this)
     indent = indent + 1
     val result = tp match {
@@ -71,6 +74,8 @@ abstract class Substitution extends (Type => Type) {
   def apply(p: (Type, Type)): (Type, Type) = p match {
     case Pair(t1, t2) => (this(t1), this(t2))
   }
+  
+  def checkSanity(): Substitution
 
   def apply(env: List[(String, TypeScheme)]): List[(String, TypeScheme)] = {
     env map {
@@ -80,14 +85,28 @@ abstract class Substitution extends (Type => Type) {
   }
 
   def extending(t: TypeVar, T: Type): Substitution
-  def checkInSet(t: TypeVar, T: Type): Boolean
 }
 
 class oneSubst(constr : List[(TypeVar, Type)]) extends Substitution {
   
-  def lookup(t: TypeVar, c: List[(TypeVar, Type)]): Type = c match {
-    case Nil => t
-    case h :: tail => if (h._1 == t) h._2 else lookup(t, tail)
+  def lookup(t: TypeVar, c: List[(TypeVar, Type)]): Type = { //problem could be here.... shoold use checksanity?
+	def inner (t: TypeVar, r: List[(TypeVar, Type)], f: List[(TypeVar, Type)]): List[(TypeVar, Type)] = r match {
+    	case Nil => f	
+    	case (x:TypeVar, y:Type) :: tail => y match {
+    	  case a: TypeVar => inner(t, tail, (t, lookup(a)) :: f)
+    	  case TypeFun(a:TypeVar, b:TypeVar) => inner(t, tail, (t, TypeFun(lookup(a), lookup(b))) :: f)
+    	  case TypeFun(a:TypeVar, b) => inner(t, tail, (t, TypeFun(lookup(a), b)) :: f)
+    	  case TypeFun(a, b:TypeVar) => inner(t, tail, (t, TypeFun(a, lookup(b))) :: f)
+    	  case a => inner(t, tail, (t, a) :: f)
+    	}
+	}
+	def checker(t: TypeVar, c: List[(TypeVar, Type)]): Type = c match {
+	  case Nil => t
+	  case (_, b) :: Nil => b
+	  case (_, b) :: tail => if (b == checker(t, tail)) b else throw TypeError("TypeError on: " + t + " typed as "+ b +" and as " + checker(t, tail) + "")
+	}
+
+   	checker(t, inner(t, c.filter(ti => ti._1 == t), List()))
   }
   
   override def lookup(t: TypeVar) : Type = {
@@ -102,34 +121,41 @@ class oneSubst(constr : List[(TypeVar, Type)]) extends Substitution {
     inner(constr)
   }
   
-  def checkChainingVar(a: TypeVar) : Type = lookup(a) match {
-    case TypeVar(x) if (x == a.name) => a
-    case b:TypeVar => checkChainingVar(b)
-    case x => x
-  } 
-  
-  override def checkInSet(t: TypeVar, T: Type) : Boolean = {
-    def inner(c : List[(TypeVar, Type)]) : Boolean = c match {
-      case Nil => true
-      case (a:TypeVar, b:Type) :: tail => {
-        if (a.name == t.name)
-          if (b == T)
-        	  inner(tail)
-          else {
-        	 T match {
-        	   case c:TypeVar => if (checkChainingVar(c) == checkChainingVar(t)) {
-        	     inner(tail)
-        	   } else {
-        	     throw TypeError("Variable " + t + " already instancied in Substitution for " + b + " and try to instanciate for " + T + " (" + checkChainingVar(c) + ")")
-        	   }
-        	   case _ => throw TypeError("Variable " + t + " already instancied in Substitution for " + b + " and try to instanciate for " + T)
-        	 }
-          }
-        else
-          inner(tail)
+  def checkSanity() : Substitution = {
+	def chaining (a: TypeVar, f: Type, list: List[(TypeVar, Type)]): List[(TypeVar, Type)] = list match {
+		case Nil => List()
+		case (t: TypeVar, u: TypeVar) :: tail if (f == u) => chaining(a, f, tail)
+		case (t: TypeVar, u: TypeVar) :: tail => (u, f) :: chaining(a, f, tail)
+		case (_, x) :: tail if (x == f)=> (a, f) :: chaining(a, f, tail)
+		case (_, x) :: tail => throw TypeError("TypeError on: " + a + " typed as "+ f +" and as " + x + "")
+	}
+    
+    def checker(b: Type, cons: List[(TypeVar, Type)], list: List[(TypeVar, Type)]) : List[(TypeVar, Type)] = list match {
+      case Nil => cons
+      case (a, c: TypeVar) :: tail if (cons.filter(i => i._1 == a && i._2 == c).size > 0) => checker (b, cons, tail)
+	  case (a, c:TypeVar) :: tail => checker(b, (a, c) :: cons, tail)
+	  //case (a, TypeFun(c1, c2)) :: tail => (a, TypeFun(c1, c2)) :: checker(b, cons, tail) TODO
+	  case (a, c) :: tail => b match {
+	    case x: TypeVar => checker(b, (a, c) :: (x, c) :: cons, tail)
+	    case _ => {
+	      if (cons.filter(i => i._1 == a && i._2 != c).size == 0)
+	        checker(b, (a, c) :: cons, tail)
+	      else {
+	    	  checker(b, chaining(a, b, cons.filter(i => i._1 == a)) ::: cons.filter(i => i._1 != a), tail)
+	      }
+	    }
+	  }
+    }
+    
+    def inner (cons: List[(TypeVar, Type)], list: List[(TypeVar, Type)]) : Substitution = cons match {
+      case (a, b) :: tail => {
+        inner(tail, (checker(b, list, (a, b) :: list.filter(i => i._1 == a)) ::: list).distinct)
+      }
+      case Nil => {
+        new oneSubst(list)
       }
     }
-    inner(constr)
+    inner(constr, List())
   }
   
   override def extending(x:TypeVar, y:Type):Substitution = new oneSubst((x, y) :: constr)
@@ -146,12 +172,12 @@ class CoupleSubst(s1: Substitution, s2: Substitution) extends Substitution {
   override def apply(tp: Type) = cons2(cons1(tp))
   override def apply(tp: (Type, Type)) = cons2(cons1(tp))
   override def extending(t: TypeVar, T: Type) = cons2.extending(t: TypeVar, T: Type)
-  override def checkInSet(t: TypeVar, T: Type) : Boolean = s1.checkInSet(t, T) && s2.checkInSet(t, T)
+  override def checkSanity():Substitution = new CoupleSubst(s1.checkSanity, s2.checkSanity)
 }
 
 /** The empty substitution. */
 object emptySubst extends Substitution {
   def lookup(t: TypeVar) = t
   override def extending(x:TypeVar, y:Type):Substitution = new oneSubst((x, y) :: Nil)
-  override def checkInSet(t: TypeVar, T: Type) : Boolean = true
+  override def checkSanity():Substitution = emptySubst
 }

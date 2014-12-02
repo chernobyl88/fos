@@ -83,14 +83,14 @@ class TwoPhaseInferencer extends TypeInferencers {
     def inner(c: List[Constraint], s: Substitution) : Substitution = c match {
 	      case (TypeVar(a), TypeVar(b)) :: tail if (a == b) => inner(tail, s)
 	      case ((TypeNat, TypeNat) | (TypeBool, TypeBool)) :: tail => inner(tail, s)
-	      case (TypeVar(x), y) :: tail if (s.checkInSet(TypeVar(x), y)) => inner(tail, s.extending(TypeVar(x), y))
-	      case (x, TypeVar(y)) :: tail if (s.checkInSet(TypeVar(y), x)) => inner(tail, s.extending(TypeVar(y), x))
+	      case (TypeVar(x), y) :: tail => inner(tail, s.extending(TypeVar(x), y))
+	      case (x, TypeVar(y)) :: tail => inner(tail, s.extending(TypeVar(y), x))
 	      case (TypeFun(x1, x2), TypeFun(y1, y2)) :: tail => inner((x1, y1) :: (x2, y2) :: tail, s)
 	      case (x, y) :: tail => throw TypeError("Could not unify: " + x + " with " + y)
 	      case Nil => s
     }
-    
-    inner(c, emptySubst)
+    //println("---->"+inner(c, emptySubst).checkSanity)
+    inner(c, emptySubst).checkSanity
   }
 
   override def typeOf(t: Term): Type = try {
