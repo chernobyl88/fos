@@ -12,7 +12,9 @@ class TwoPhaseInferencer extends TypeInferencers {
   /** Type <code>t</code> in <code>env</code> and return its type and a
    *  constraint list.
    */
-  def collect(env: Env, t: Term): TypingResult = t match {
+  def collect(env: Env, t: Term): TypingResult = {
+    println( "T :" + t + "|| env :"+env)
+    t match {
     case Var(x) =>
       val t1 = lookup(env, x)
       if (t1 == null)
@@ -61,13 +63,18 @@ class TwoPhaseInferencer extends TypeInferencers {
     case Let(x, v, t) => {
       val freshVar = FreshName.newName
       val TypingResult(pTv, cv) = collect(env, v)
+      println("ptv: " + pTv +" --cv: "+cv )
       
       val subst = unify(cv)
+      println("Subst:" + subst)
       val S = subst(pTv)
+      println("S: " + S)
       
       val TypingResult(pT, c) = collect((x, TypeScheme(isFree(subst(env), freshVar), freshVar)) :: env, t)
-      TypingResult(TypeFun(S, pT), c)
-    }
+      
+      println("pt: " + pT +" --c: "+c )
+      TypingResult(pT, c)
+    }}
   }
   
   def isFree(env: Env, t: Type): List[TypeVar] = t match {

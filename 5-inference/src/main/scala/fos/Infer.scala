@@ -76,8 +76,9 @@ object Infer extends StandardTokenParsers {
   val Inferencer = new TwoPhaseInferencer
 
   def main(args: Array[String]) {
-     var func = "(\\x.if (\\y. iszero y) x then x else x) 0"
+     var func = "(\\x.x)"
      func = "let double = \\f.\\x.f(f(x)) in if (double (\\x:Bool. if x then false else true) false) then double (\\x:Nat.succ x) 0 else 0"
+      func="(\\f.\\x. let g = f in g(0)) (\\x.if x then false else true) true"
      val tokens = new lexical.Scanner(func);
     //val tokens = new lexical.Scanner(StreamReader(new java.io.InputStreamReader(System.in)))
     phrase(Term)(tokens) match {
